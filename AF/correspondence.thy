@@ -1,4 +1,4 @@
-theory correspondance
+theory correspondence
   imports labellings 
 begin
 
