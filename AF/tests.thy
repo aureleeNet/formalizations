@@ -1,5 +1,5 @@
 theory tests
-  imports labellings correspondance
+  imports labellings correspondence
 begin
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=2] (*default settings*)
 
