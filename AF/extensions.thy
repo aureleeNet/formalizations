@@ -11,16 +11,6 @@ nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=2]
  [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
   logic programming and n-person games, Artificial Intelligence. (1995)
 *)
-named_theorems Defs
-
-(* An argumentation frame(work) AF is completely characterized in HOL by its underlying "attack" relation,
-   since the set of arguments (the carrier of "attack") is given implicitly as the domain set for type 'a. *)
-type_synonym 'a \<A>\<F> = \<open>'a Rel\<close>
-
-(* Given a set of arguments S, we define its set of attacked (+) and attacking (-) arguments ([BCG 2011] p. 3). *)
-definition plusset :: \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close> ("[_|_]\<^sup>+") where \<open>[AF|S]\<^sup>+ \<equiv> \<lambda>b. \<exists>a. S a \<and> AF a b\<close>
-definition minusset:: \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close> ("[_|_]\<^sup>-") where \<open>[AF|S]\<^sup>- \<equiv> \<lambda>b. \<exists>a. S a \<and> AF b a\<close>
-declare plusset_def[Defs] minusset_def[Defs]
 
 (* A set S of arguments defends an argument A iff each argument B attacking A is itself attacked by
 at least one argument in S ([Dung 1995] Def. 6(1) and  [BCG 2011] Def. 11). *)
@@ -107,3 +97,4 @@ lemma groundedComplete: "grounded_ext AF S \<longrightarrow> complete_ext AF S"
   using groundedConflictfree by (metis complete_ext_def2 grounded_ext_def least_def) 
 
 end
+

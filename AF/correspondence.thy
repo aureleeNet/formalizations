@@ -1,8 +1,14 @@
 theory correspondence
-  imports labellings 
+  imports labellings extensions
 begin
 
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=2] (*default settings*)
+
+(* Define mappings between extensions and labellings. *)
+abbreviation Lab2Ext::\<open>'a Labelling \<Rightarrow> 'a Set\<close>
+  where \<open>Lab2Ext Lab \<equiv> in(Lab)\<close>
+abbreviation Ext2Lab::\<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> 'a Labelling\<close> (* Warning: works only for conflict-free sets! *)
+  where \<open>Ext2Lab AF E \<equiv> \<lambda>a. if (E a) then In else (if ([AF|E]\<^sup>+ a) then Out else Undec)\<close>
 
 (*conflict-free*)
 
@@ -70,3 +76,4 @@ lemma "preferred AF (Ext2Lab AF E) \<longrightarrow> preferred_ext AF E"
   unfolding preferred_ext_def preferred_def
   (*nitpick[timeout=100]*) oops (*TODO*)
 end
+

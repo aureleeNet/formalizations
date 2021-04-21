@@ -1,5 +1,5 @@
 theory labellings
-  imports extensions 
+  imports base 
 begin
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=2] (*default settings*)
 
@@ -19,11 +19,6 @@ definition inset :: \<open>'a Labelling \<Rightarrow> 'a Set\<close> ("in") wher
 definition outset :: \<open>'a Labelling \<Rightarrow> 'a Set\<close> ("out") where \<open>out(Lab) \<equiv> \<lambda>x. Lab(x) = Out\<close>
 definition undecset :: \<open>'a Labelling \<Rightarrow> 'a Set\<close> ("undec") where \<open>undec(Lab) \<equiv> \<lambda>x. Lab(x) = Undec\<close>
 
-(* Define mappings between extensions and labellings. *)
-abbreviation Lab2Ext::\<open>'a Labelling \<Rightarrow> 'a Set\<close>
-  where \<open>Lab2Ext Lab \<equiv> in(Lab)\<close>
-abbreviation Ext2Lab::\<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> 'a Labelling\<close> (* Warning: works only for conflict-free sets! *)
-  where \<open>Ext2Lab AF E \<equiv> \<lambda>a. if (E a) then In else (if ([AF|E]\<^sup>+ a) then Out else Undec)\<close>
 declare inset_def[Defs] outset_def[Defs] undecset_def[Defs]
 
 (* The definitions below draw from [BCG 2011] but are stated for any arbitrarily labelled argument.*)
@@ -137,3 +132,4 @@ abbreviation "findFor AF Prop Ext \<equiv> \<forall>Lab. Ext Lab \<longleftright
 abbreviation "findFor2 AF Prop Ext \<equiv> \<forall>Lab. Lab \<in> Ext \<longleftrightarrow> (Prop(AF) Lab)"
 
 end
+

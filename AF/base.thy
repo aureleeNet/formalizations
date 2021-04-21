@@ -88,4 +88,26 @@ lemma wKTg:  "MONO F \<Longrightarrow> \<exists>S. greatest (fixpoint F) S id" u
 lemma    "(least (fixpoint F) S id) = (fixpoint F S \<and> (\<forall>X. fixpoint F X \<longrightarrow> S \<subseteq> X))" by (simp add: least_def)
 lemma "(greatest (fixpoint F) S id) = (fixpoint F S \<and> (\<forall>X. fixpoint F X \<longrightarrow> X \<subseteq> S))" by (simp add: greatest_def)
 
+
+(************** Representation basics of argumentation frameworks and related basic notions ******************)
+
+
+(* Source: 
+ [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
+  Knowledge Engineering Review. (2011)
+*)
+
+(* A collection of definitions related to AFs  *)
+named_theorems Defs
+
+(* An argumentation frame(work) AF is completely characterized in HOL by its underlying "attack" relation,
+   since the set of arguments (the carrier of "attack") is given implicitly as the domain set for type 'a. *)
+type_synonym 'a \<A>\<F> = \<open>'a Rel\<close>
+
+(* Given a set of arguments S, we define its set of attacked (+) and attacking (-) arguments ([BCG 2011] p. 3). *)
+definition plusset :: \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close> ("[_|_]\<^sup>+") where \<open>[AF|S]\<^sup>+ \<equiv> \<lambda>b. \<exists>a. S a \<and> AF a b\<close>
+definition minusset:: \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close> ("[_|_]\<^sup>-") where \<open>[AF|S]\<^sup>- \<equiv> \<lambda>b. \<exists>a. S a \<and> AF b a\<close>
+declare plusset_def[Defs] minusset_def[Defs]
+
 end
+
