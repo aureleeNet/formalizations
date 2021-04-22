@@ -64,6 +64,11 @@ declare complete_ext_def[Defs]
 lemma complete_ext_def2: "complete_ext AF S = (conflictfree_ext AF S \<and> fixpoint (\<F> AF) S)" 
   by (metis admissible_ext_def complete_ext_def fixpoint_def)
 
+(* every complete extension is admissible but not the other way round *)
+lemma completeAdmissible: \<open>complete_ext AF S \<longrightarrow> admissible_ext AF S\<close> by (simp add: complete_ext_def)
+lemma \<open>admissible_ext AF S \<Longrightarrow> complete_ext AF S\<close> nitpick oops
+
+
 (* A preferred extension of an argumentation framework AF is a maximal (with respect to set inclusion)
   admissible set of AF ([Dung 1995] Def. 7). *)
 definition preferred_ext ::  \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> bool\<close>
@@ -74,27 +79,45 @@ declare preferred_ext_def[Defs]
 lemma "preferred_ext AF S = (admissible_ext AF S \<and> (\<forall>Q. admissible_ext AF Q \<and> S \<subseteq> Q  \<longrightarrow> Q \<approx> S))"
   by (simp add: preferred_ext_def maximal_def)
 
-(* Preferred extensions are complete. *)
-lemma preferredComplete: "preferred_ext AF S \<longrightarrow> complete_ext AF S"
-  unfolding preferred_ext_def complete_ext_def maximal_def id_def
-  by (smt (z3) defends_def admissible_ext_def conflictfree_ext_def)
+(* We can verify that preferred extensions are maximally complete extensions; *)
+lemma preferredMaxComplete: "preferred_ext AF S \<longrightarrow> maximal (complete_ext AF) S id" 
+  unfolding preferred_ext_def maximal_def complete_ext_def by (smt (z3) admissible_ext_def conflictfree_ext_def defends_def id_apply)
+(* however, the converse direction cannot be proven automatically.. yet.*)
+lemma "maximal (complete_ext AF) S id \<longrightarrow> preferred_ext AF S" oops (* TODO prove*)
 
-(* The grounded extension of an argumentation framework AF is the least fixed point of \<F> ([Dung 1995] Def. 20). *)
+
+(* The grounded extension of an argumentation framework AF is a minimal complete extension ([BCG 2011] Def. 21). *)
 definition grounded_ext ::  \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> bool\<close>
-  where "grounded_ext AF S \<equiv> least (fixpoint (\<F> AF)) S id"
+  where "grounded_ext AF S \<equiv> minimal (complete_ext AF) S id"
 declare grounded_ext_def[Defs]
 
-(* The grounded extension also corresponds to the minimal (conflict free) fixed point of \<F> ([BCG 2011] Def. 21). *)
-lemma grounded_ext_def2: "grounded_ext AF S = minimal (fixpoint (\<F> AF)) S id" 
-  unfolding grounded_ext_def tlfp_def by (metis leastMin minLeastCollapse \<F>_leastFP_ex)
+(* This is equivalent to the least complete extension: *)
+lemma grounded_ext_def2: "grounded_ext AF S = least (complete_ext AF) S id" 
+  unfolding grounded_ext_def using \<F>_leastFP_ex  by (smt (z3) complete_ext_def2 conflictfree_ext_def id_def least_def minimal_def)
 
-(* Grounded extensions are conflict-free (but provers cannot prove this automatically: we need a 'manual' proof). *)
-lemma groundedConflictfree: "grounded_ext AF S \<longrightarrow> conflictfree_ext AF S"
-  unfolding grounded_ext_def2 minimal_def conflictfree_ext_def fixpoint_def sorry (*TODO: reconstruct proof*)
 
-(* Assuming the result above, grounded extensions are complete. *)
-lemma groundedComplete: "grounded_ext AF S \<longrightarrow> complete_ext AF S" 
-  using groundedConflictfree by (metis complete_ext_def2 grounded_ext_def least_def) 
+(* Alternatively, according to Dung, the grounded extension of an argumentation framework AF is
+   the least fixed point of \<F> ([Dung 1995] Def. 20). *)
+definition grounded_ext_Dung ::  \<open>'a \<A>\<F> \<Rightarrow> 'a Set \<Rightarrow> bool\<close>
+  where "grounded_ext_Dung AF S \<equiv> least (fixpoint (\<F> AF)) S id"
+declare grounded_ext_Dung_def[Defs]
+
+(* This is equivalent to the minimal (conflict free?) fixed point of \<F>. *)
+lemma grounded_ext_Dung_def2: "grounded_ext_Dung AF S = minimal (fixpoint (\<F> AF)) S id" 
+  unfolding grounded_ext_Dung_def tlfp_def by (metis leastMin minLeastCollapse \<F>_leastFP_ex)
+
+(* The given [BCG 2011] definition indeed implies Dung's definition. *)
+lemma groundedDungDefEq1: "grounded_ext AF S \<longrightarrow> grounded_ext_Dung AF S" 
+  unfolding grounded_ext_def grounded_ext_Dung_def2 by (smt (verit, best) complete_ext_def2 conflictfree_ext_def id_apply minimal_def)
+
+(* The key to proving the converse implication lies on proving that minimal/least fixed points of \<F>
+ are conflict-free. However, provers still cannot prove this automatically. *)
+lemma "grounded_ext_Dung AF S \<longrightarrow> conflictfree_ext AF S" oops (*TODO: reconstruct proof 'manually'*)
+
+(* Assuming the result above, we can prove that Dung's definition implies the given [BCG 2011] definition. *)
+lemma groundedDungDefEq2: assumes "grounded_ext_Dung AF S \<longrightarrow> conflictfree_ext AF S"
+  shows "grounded_ext_Dung AF S \<longrightarrow> grounded_ext AF S" unfolding grounded_ext_def
+  by (simp add: assms complete_ext_def2 grounded_ext_Dung_def2 minimal_def)
 
 end
 
