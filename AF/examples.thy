@@ -97,15 +97,17 @@ lemma \<open>findFor2 att complete Labs\<close> nitpick[satisfy, eval = "card La
 (* checked: these are exactly the 3 labellings given in [BG2011] *) 
 
 (* grounded labellings *)
-lemma \<open>grounded att Lab\<close> nitpick[satisfy] oops
-lemma \<open>findFor2 att grounded Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
+lemma \<open>grounded2 att Lab\<close> nitpick[satisfy] oops
+lemma \<open>findFor2 att grounded Labs\<close> nitpick[satisfy, box=false, eval = "card Labs"] oops
+(* (comment: using the the definition above requires disabling boxing for nitpick to find a model)*)
+lemma \<open>findFor2 att grounded2 Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
 (* checked: these is exactly the one labelling given in [BG2011] *)   
 
 (* preferred labellings *)
 lemma \<open>preferred att Lab\<close> nitpick[satisfy] oops
-lemma \<open>findFor2 att preferred Labs\<close> nitpick[satisfy,box=false, eval = "card Labs"] oops
+lemma \<open>findFor2 att preferred Labs\<close> nitpick[satisfy, box=false, eval = "card Labs"] oops
 (* checked: these are exactly the two labellings given in [BG2011] *)   
-(* comment: we have to disable boxing for nitpick to find the model *)
+(* (comment: we have to disable boxing for nitpick to find the model) *)
 
 (* stable labellings *)
 lemma \<open>stable att Lab\<close> nitpick[satisfy] oops
@@ -143,7 +145,7 @@ lemma \<open>findFor2 att complete Labs\<close> nitpick[satisfy, eval = "card La
 
 (* grounded labellings *)
 lemma \<open>grounded att Lab\<close> nitpick[satisfy] oops
-lemma \<open>findFor2 att grounded Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
+lemma \<open>findFor2 att grounded2 Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
 (* checked: this is the one trivial labelling, as mentioned in [BG2011].*) 
 
 (* preferred labellings *)

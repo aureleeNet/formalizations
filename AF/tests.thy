@@ -31,8 +31,8 @@ lemma \<open>admissible AF Lab \<Longrightarrow> legallyOut AF Lab x \<longright
 (********************************** Complete **************************************)
 
 (*in-sets of complete labellings are fixed points of the characteristic function*)
-lemma completeInFP: "complete AF Lab \<Longrightarrow> fixpoint (\<F> AF) (in Lab)" unfolding fixpoint_def
-  by (metis complete_def2 defends_def legallyIn_def legallyOut_def)
+lemma completeInFP: "complete AF Lab \<Longrightarrow> fixpoint (\<F> AF) (in Lab)" 
+  unfolding fixpoint_def by (metis complete2_def complete_def2 defends_def legallyIn_def legallyOut_def)
 
 lemma \<open>\<exists>Lab. fixpoint (\<F> AF) (in Lab)\<close> unfolding fixpoint_def using complete_def2 exAdmissible oops (*TODO*)
 
@@ -47,7 +47,7 @@ lemma \<open>admissible AF Lab \<Longrightarrow> complete AF Lab\<close> nitpick
 lemma completeInLab: \<open>complete AF L1 \<Longrightarrow> complete AF L2 \<Longrightarrow> in(L1) \<approx> in(L2) \<longrightarrow> (\<forall>x. L1(x) = L2(x))\<close>
   by (smt (verit) Label.exhaust admissibleConflictfree complete_def conflictfree_def inset_def legallyOut_def legallyUndec_def outset_def undecset_def)
 lemma completeOutLab: \<open>complete AF L1 \<Longrightarrow> complete AF L2 \<Longrightarrow> out(L1) \<approx> out(L2) \<longrightarrow> (\<forall>x. L1(x) = L2(x))\<close>
-  by (metis (full_types) Label.exhaust complete_def2 inset_def legallyIn_def outset_def)
+  by (metis (full_types) Label.exhaust complete2_def complete_def2 inset_def legallyIn_def outset_def)
 lemma \<open>complete AF L1 \<Longrightarrow> complete AF L2 \<Longrightarrow> undec(L1) \<approx> undec(L2) \<longrightarrow> (\<forall>x. L1(x) = L2(x))\<close> nitpick oops
 
 (* For complete labellings, every in-set which is minimal is the least in-set.
@@ -63,7 +63,7 @@ lemma \<open>complete AF Lab1 \<Longrightarrow> complete AF Lab2 \<Longrightarro
 
 (*Prop 5 from [BCG2011], only partially proven so far *)
 lemma prop5_1iff2: \<open>minimal (complete AF) Lab out = minimal (complete AF) Lab in\<close>
-  unfolding minimal_def using complete_def2 by (smt (z3) Label.exhaust legallyIn_def legallyOut_def)
+  unfolding minimal_def using complete_def2 complete2_def by (smt (z3) Label.exhaust legallyIn_def legallyOut_def)
 (* some of the following still required *)
 lemma prop5_1to3: \<open>minimal (complete AF) Lab in \<longrightarrow> maximal (complete AF) Lab undec\<close> oops (*TODO*)
 lemma prop5_2to3: \<open>minimal (complete AF) Lab out \<longrightarrow> maximal (complete AF) Lab undec\<close> oops (*TODO*)
@@ -72,23 +72,24 @@ lemma prop5_3to2: \<open>maximal (complete AF) Lab undec \<longrightarrow> minim
 
 (*However, we can prove weaker variants of some of the above*)
 lemma prop5_2to3_weak: \<open>least (complete AF) Lab out \<longrightarrow> greatest (complete AF) Lab undec\<close> unfolding least_def greatest_def
-  by (smt (verit, best) Label.exhaust outset_def complete_def2 undecset_def legallyIn_def inset_def)
+  by (smt (verit, best) Label.exhaust outset_def complete_def2 complete2_def undecset_def legallyIn_def inset_def)
 lemma prop5_3to2_weak: \<open>greatest (complete AF) Lab undec \<longrightarrow> minimal (complete AF) Lab out\<close> unfolding minimal_def greatest_def
-  by (metis admissibleConflictfree admissibleLegUndec complete_def complete_def2 conflictfree_def legallyUndec_def legallyOut_def )
+  by (metis admissibleConflictfree admissibleLegUndec complete_def complete2_def complete_def2 conflictfree_def legallyUndec_def legallyOut_def )
 
 
 (*********************************** Grounded and Preferred ********************************)
+
+(* the two provided definitions of grounded labellings are equivalent *)
+lemma grounded_def2: \<open>grounded AF Lab = grounded2 AF Lab\<close> 
+ unfolding grounded_def grounded2_def by (smt (verit) complete_LE grounded_LE grounded_def grounded_ext_def2 id_apply least_def minimal_def)
 
 (* grounded labellings always exist *)
 lemma \<open>\<exists>Lab. grounded AF Lab\<close> oops (*TODO*)
 
 (* Side comment from [BCG2011] that grounded labellings are unique *)
 lemma grounded_unique: \<open>grounded AF Lab1 \<Longrightarrow> grounded AF Lab2 \<Longrightarrow> \<forall>x. Lab1(x) = Lab2(x)\<close>
-  unfolding grounded_def least_def by (metis (full_types) Label.exhaust complete_def2 inset_def legallyOut_def outset_def)
-
-(* side-comment: it can be proven that the definition below is equivalent *)
-lemma preferred_def2: \<open>preferred AF Lab = (complete AF Lab \<and> (\<forall>L. (complete AF L \<and> in(Lab) \<subseteq> in(L)) \<longrightarrow> (\<forall>x. L(x) = Lab(x))))\<close>
-   by (smt (z3) completeInLab inset_def maximal_def preferred_def)  
+  unfolding grounded_def2 least_def 
+  by (metis (full_types) completeInLab grounded2_def least_def)
 
 (* preferred labellings always exist *)
 lemma \<open>\<exists>Lab. preferred AF Lab\<close> oops (*TODO*)
@@ -96,18 +97,18 @@ lemma \<open>\<exists>Lab. preferred AF Lab\<close> oops (*TODO*)
 (*Prop 8 from [BCG2011] 
  For complete labellings, being maximal/greatest wrt In is equivalent to being maximal/greatest wrt Out*)
 lemma prop8: \<open>maximal (complete AF) Lab in \<longleftrightarrow> maximal (complete AF) Lab out\<close> unfolding maximal_def
-  by (smt (z3) complete_def2 legallyIn_def legallyOut_def)
+  by (smt (z3) complete_def2 complete2_def legallyIn_def legallyOut_def)
 
 lemma prop8': \<open>greatest (complete AF) Lab in \<longleftrightarrow> greatest (complete AF) Lab out\<close> unfolding greatest_def
-  by (metis complete_def2 legallyIn_def legallyOut_def)
+  by (metis complete_def2 complete2_def legallyIn_def legallyOut_def)
 
 (* In fact, being greatest wrt In implies being least wrt Undec, but not the other way round*)
 lemma \<open>greatest (complete AF) Lab in \<longrightarrow> least (complete AF) Lab undec\<close> unfolding greatest_def least_def
-  by (metis admissibleLegUndec complete_def complete_def2 legallyOut_def legallyUndec_def)
+  by (metis admissibleLegUndec complete_def complete2_def complete_def2 legallyOut_def legallyUndec_def)
 lemma \<open>least (complete AF) Lab undec \<longrightarrow> greatest (complete AF) Lab in\<close> nitpick oops
 (* Moreover, being minimal wrt Undec implies being maximal wrt In, but not the other way round (cf. semi-stable labellings)*)
 lemma \<open>minimal (complete AF) Lab undec \<longrightarrow> maximal (complete AF) Lab in\<close> unfolding minimal_def maximal_def
-  by (smt (verit, ccfv_SIG) Label.exhaust complete_def2 inset_def legallyOut_def outset_def undecset_def)
+  by (smt (verit, ccfv_SIG) Label.exhaust complete_def2 complete2_def inset_def legallyOut_def outset_def undecset_def)
 lemma \<open>maximal (complete AF) Lab in \<longrightarrow> minimal (complete AF) Lab undec\<close> nitpick oops
 
 
@@ -135,7 +136,7 @@ corollary \<open>\<exists>AF. \<forall>Lab. \<not>stable AF Lab\<close> using st
 (*Lemma 14 from Dung. S is a stable extension iff S = {A | A is not attacked by S}.
 Adapted to Labelings: It's weaker as we have to deal with Undec as well. *)
 lemma lem14Dung: "stable AF Lab \<longrightarrow> (\<forall>a. in(Lab) a \<longleftrightarrow> \<not>(\<exists>b. in(Lab) b \<and> AF b a))" unfolding stable_def complete_def2
-  by (metis (full_types) Label.distinct(1) Label.exhaust inset_def legallyOut_def outset_def)
+  by (metis (full_types) Label.distinct(1) Label.exhaust complete2_def inset_def legallyOut_def outset_def)
 
 (*Lemma 15 from Dung. Every stable extension is a preferred extension, but not vice versa.
 Adapted to Labellings *)
@@ -163,19 +164,19 @@ lemma \<open>stable AF Lab \<Longrightarrow> semistable AF Lab\<close>
   by (simp add: semistable_def stable_def undecset_def minimal_def)
 
 lemma \<open>semistable AF Lab \<Longrightarrow> preferred AF Lab \<close> unfolding semistable_def preferred_def minimal_def maximal_def
-  by (smt (verit, ccfv_SIG) Label.exhaust complete_def2 inset_def legallyOut_def outset_def undecset_def)
+  by (smt (verit, ccfv_SIG) Label.exhaust complete2_def complete_def2 inset_def legallyOut_def outset_def undecset_def)
 
-lemma \<open>stable AF Lab \<Longrightarrow> stage AF Lab\<close> 
-  by (metis lem15Dung prop10_4to1 stable_def stage_def undecset_def minimal_def)
+lemma \<open>stable AF Lab \<Longrightarrow> stage AF Lab\<close> sledgehammer
+  by (simp add: admissibleConflictfree leastMin least_def stable_def stage_def completeAdmissible undecset_def)
 
 lemma \<open>preferred AF Lab \<Longrightarrow> complete AF Lab\<close>
   by (simp add: preferred_def maximal_def)
 
-lemma \<open>ideal AF Lab \<Longrightarrow> complete AF Lab\<close> 
+lemma \<open>ideal AF Lab \<Longrightarrow> complete AF Lab\<close>
   oops (*TODO*)
 
 lemma \<open>grounded AF Lab \<Longrightarrow> complete AF Lab\<close>
-  by (simp add: grounded_def least_def)
+  by (simp add: grounded_def minimal_def)
 
 lemma \<open>complete AF Lab \<Longrightarrow> admissible AF Lab\<close> 
   by (simp add: admissible_def complete_def)
@@ -185,8 +186,6 @@ lemma \<open>admissible AF Lab \<Longrightarrow> conflictfree AF Lab\<close>
 
 lemma \<open>stage AF Lab \<Longrightarrow> conflictfree AF Lab\<close> 
   by (simp add: stage_def minimal_def)
-
-
 
 end
 

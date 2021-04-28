@@ -1,5 +1,5 @@
 theory labellings
-  imports base 
+  imports base
 begin
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=2] (*default settings*)
 
@@ -61,23 +61,21 @@ lemma completeLegOut: \<open>complete AF Lab \<and> legallyOut AF Lab x \<longri
 (* Complete labelling can be alternatively characterised as the labellings in which, for each argument A 
  (i) A is labelled in iff all its attackers are labelled out; and
 (ii) A is labelled out iff it has at least one attacker that is labelled in ([BCG2011] Prop. 2). *)
-lemma complete_def2: \<open>complete AF Lab = (\<forall>x. (in Lab x \<longleftrightarrow> legallyIn AF Lab x) \<and>
+definition complete2 :: \<open>'a \<A>\<F> \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
+  where \<open>complete2 AF Lab \<equiv> (\<forall>x. (in Lab x \<longleftrightarrow> legallyIn AF Lab x) \<and>
                                             (out Lab x \<longleftrightarrow> legallyOut AF Lab x))\<close>
- using completeLegIn completeLegOut by (metis Label.distinct(3) Label.distinct(5) admissible_def complete_def legallyUndec_def inset_def outset_def undecset_def)
+declare complete2_def[Defs]
 
+lemma complete_def2: \<open>complete AF Lab = complete2 AF Lab\<close>
+ using completeLegIn completeLegOut complete2_def by (metis Label.distinct(3) Label.distinct(5) admissible_def complete_def legallyUndec_def inset_def outset_def undecset_def)
 
-lemma \<open>minimal (complete AF) Lab in \<longrightarrow> least (complete AF) Lab in\<close> oops (*TODO manually reconstruct proof*)
-
-(* A grounded labelling is a complete labelling whose in-set is minimal wrt. set inclusion ([BCG 2011] Def. 20). *)
+(* A grounded labelling is a (the) complete labelling whose in-set is minimal (least) wrt. 
+set inclusion ([BCG 2011] Def. 20). The two definitions below are shown equivalent in theory "tests". *)
 definition grounded :: \<open>'a \<A>\<F> \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
- (* where \<open>grounded AF Lab \<equiv> minimal (complete AF) Lab in\<close>  (*as it actually appears in [BCG 2011]*) *)
-
- (* we work meanwhile with the definition below until we prove the lemma above*)
-   where \<open>grounded AF Lab \<equiv> least (complete AF) Lab in\<close> 
-declare grounded_def[Defs] 
-
-(* (just to check) *)
-lemma \<open>grounded AF Lab = (complete AF Lab \<and> (\<forall>L. complete AF L \<longrightarrow> in(Lab) \<subseteq> in(L)))\<close> by (simp add: grounded_def least_def)
+  where \<open>grounded AF Lab \<equiv> minimal (complete AF) Lab in\<close>
+definition grounded2 :: \<open>'a \<A>\<F> \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
+  where \<open>grounded2 AF Lab \<equiv> least (complete AF) Lab in\<close>
+declare grounded_def[Defs] grounded2_def[Defs] 
 
 (* Def. 22 from [BCG 2011] *)
 definition preferred :: \<open>'a \<A>\<F> \<Rightarrow> 'a Labelling => bool\<close>
@@ -99,7 +97,7 @@ definition lessOrEquallyCommitted :: \<open>'a Labelling \<Rightarrow> 'a Labell
   where "L1 \<sqsubseteq> L2 \<equiv> (in(L1) \<subseteq> in(L2)) \<and> (out(L1) \<subseteq> out(L2))"
 declare lessOrEquallyCommitted_def[Defs]
 
-(* Def. 29 from [BCG 2011], Check if this is really correct. *)
+(* Def. 29 from [BCG 2011] *)
 definition ideal :: \<open>'a \<A>\<F> \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
   (* where \<open>ideal AF Lab \<equiv> admissible AF Lab \<and> (\<forall>L. ((admissible AF L) \<and> Lab \<sqsubseteq> L) \<longrightarrow> (\<forall>x. Lab(x) = L(x))) \<and> (\<forall>L. ((preferred AF L)) \<longrightarrow> (Lab \<sqsubseteq> L)) \<close>   *)
   where \<open>ideal AF Lab \<equiv> admissible AF Lab \<and> (\<forall>L. admissible AF L \<longrightarrow> L \<sqsubseteq> Lab) \<and> (\<forall>L. preferred AF L \<longrightarrow> Lab \<sqsubseteq> L)\<close>  
