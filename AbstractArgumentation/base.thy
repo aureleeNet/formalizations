@@ -108,17 +108,42 @@ lemma equivLabId: "L1 \<cong> L2 \<longleftrightarrow> L1 = L2" using Label.exha
 definition equivalentLab_rel :: \<open>'a Labelling \<Rightarrow> 'a Set \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("_\<cong>\<^sup>__") 
   where "L1 \<cong>\<^sup>\<A> L2 \<equiv> (in(L1) \<approx>\<^sup>\<A> in(L2)) \<and> (out(L1) \<approx>\<^sup>\<A> out(L2))"
 
-(********** Argument justification (cf. [BCG 2011] \<section>4). ****************)
+lemma InUndecEquivLab_rel: "(in(L1) \<approx>\<^sup>\<A> in(L2)) \<and> (undec(L1) \<approx>\<^sup>\<A> undec(L2)) \<longrightarrow> L1 \<cong>\<^sup>\<A> L2"
+  by (smt (verit, ccfv_SIG) Label.exhaust equivalentLab_rel_def inset_def outset_def undecset_def)
+lemma OutUndecEquivLab_rel: "(out(L1) \<approx>\<^sup>\<A> out(L2)) \<and> (undec(L1) \<approx>\<^sup>\<A> undec(L2)) \<longrightarrow> L1 \<cong>\<^sup>\<A> L2"
+  by (smt (verit, ccfv_SIG) Label.exhaust equivalentLab_rel_def inset_def outset_def undecset_def)
+
+lemma equivLabId_rel: "L1 \<cong>\<^sup>\<A> L2 \<longleftrightarrow> L1 = L2" oops (* does not hold as expected *)
+lemma IdLabImplEquiv_rel: "L1 = L2 \<Longrightarrow> L1 \<cong>\<^sup>\<A> L2" (* of course this one-sided direction holds *)
+  by (simp add: equivalentLab_rel_def)
+
+
+(***********************************************************)
+(***********************************************************)
+(*        Argument justification (cf. [BCG 2011] \<section>4).      *)
+(***********************************************************)
+(***********************************************************)
+
 type_synonym 'a LabSemantics = \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
 
+(* semantics has to be non-empty *)
 definition skepticallyJustified :: \<open>'a LabSemantics \<Rightarrow> 'a Rel \<Rightarrow> 'a \<Rightarrow> bool\<close> ("sJ")
-  where \<open>sJ S att \<equiv> \<lambda>arg. \<forall>Lab. (S att Lab) \<longrightarrow> Lab(arg) = In\<close>
+  where \<open>sJ S att \<equiv> \<lambda>arg. \<forall>Lab. ((\<exists>x. (Lab x) = In) \<and> (S att Lab)) \<longrightarrow> Lab(arg) = In\<close>
+(* non-emptiness implicit *)
 definition credulouslyJustified :: \<open>'a LabSemantics \<Rightarrow> 'a Rel \<Rightarrow> 'a \<Rightarrow> bool\<close> ("cJ")
-  where \<open>cJ S att \<equiv> \<lambda>arg. \<exists>Lab. (S att Lab) \<longrightarrow> Lab(arg) = In\<close>
+  where \<open>cJ S att \<equiv> \<lambda>arg. \<exists>Lab. (S att Lab) \<and> Lab(arg) = In\<close>
 
-lemma \<open>sJ S att a \<Longrightarrow> cJ S att a\<close> by (simp add: credulouslyJustified_def skepticallyJustified_def)
+lemma \<open>\<exists> S att a. \<not>(sJ S att a \<longrightarrow> cJ S att a)\<close>
+  unfolding skepticallyJustified_def credulouslyJustified_def
+  by auto
 lemma \<open>cJ S att a \<Longrightarrow> sJ S att a\<close> nitpick oops (* expected *)
 
+
+(***********************************************************)
+(***********************************************************)
+(*     Technical auxiliary definitions for experiments     *)
+(***********************************************************)
+(***********************************************************)
 
 (* The predicate below is actually equivalent to: S = (Prop att). 
 This is useful for obtaining at once *all* sets of extensions/labellings by using Nitpick *)

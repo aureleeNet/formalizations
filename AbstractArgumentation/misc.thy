@@ -12,7 +12,7 @@ declare [[syntax_ambiguity_warning = false]]
 (************** Basic set- and order-theoretical notions ******************)
 
 (* hide set notation for Isabelle's built-in sets: The aim is to provide an 
-   embedding that is as shallow as possible (i.e., it uses no reprensetation
+   embedding that is as shallow as possible (i.e., it uses no representation
    techniques that are specific to Isabelle/HOL. Still, we want to 
    use nice notation; this is why Isabelle/HOL predefined interpretations for 
    subset, union, etc. symbols are hidden. *)
@@ -56,8 +56,8 @@ abbreviation set_cnstr3::\<open>'a\<Rightarrow>'a\<Rightarrow>'a\<Rightarrow>'a 
 (*Restricted quantifiers that take a 'domain' as additional parameter (interpreted as the predicate 'exists')*)
 abbreviation mforall_rel::"('a\<Rightarrow>bool)\<Rightarrow>('a\<Rightarrow>bool)\<Rightarrow>bool" ("\<forall>\<^sup>_ _") where \<open>\<forall>\<^sup>U P \<equiv> \<forall>x. U x \<longrightarrow> (P x)\<close> 
 abbreviation mexists_rel::"('a\<Rightarrow>bool)\<Rightarrow>('a\<Rightarrow>bool)\<Rightarrow>bool" ("\<exists>\<^sup>_ _") where \<open>\<exists>\<^sup>U P \<equiv> \<exists>x. U x  \<and>  (P x)\<close>
+lemma relQuantifierDual: \<open>\<forall>\<^sup>A P \<longleftrightarrow> \<not>(\<exists>\<^sup>A (\<lambda>x. \<not>(P x)))\<close> by simp
 
-lemma \<open>\<forall>\<^sup>A P \<longleftrightarrow> \<not>(\<exists>\<^sup>A (\<lambda>x. \<not>(P x)))\<close> by simp
 (* abbreviation mforall_relB (binder "\<forall>\<^sup>_" [55]56) where "\<forall>\<^sup>U x. P x \<equiv> \<forall>\<^sup>U P" *)
 (* abbreviation mexists_relB (binder "\<exists>\<^sup>_" [55]56) where "\<exists>\<^sup>U x. P x \<equiv> \<exists>\<^sup>U P" *)
 
