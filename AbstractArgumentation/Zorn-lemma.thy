@@ -42,14 +42,15 @@ proof -
   fix A::"'a Set Set"
   assume "allChainsHaveUB A"
   {
-    fix X assume "A X"
-    let ?F= "\<lambda>Y. X \<subseteq> Y"
-    have "allChainsHaveUB ?F" by (smt (verit, del_insts) chains_def allChainsHaveUB_def least_def sup_char upper_bound_def)
+    fix X assume *: "A X"
+    let ?F= "\<lambda>Y. A Y \<and> X \<subseteq> Y"
+    have "allChainsHaveUB ?F" 
+      by (smt (verit, del_insts) "*" \<open>allChainsHaveUB A\<close> allChainsHaveUB_def upper_bound_def)
     hence "\<exists>M. maximal ?F M id" by (simp add: ZornLemma)
     then obtain M where max: "maximal ?F M id" by (rule exE)
     hence gtX: "X \<subseteq> M" by (simp add: maximal_def)
-    moreover from max gtX have "maximal A M id" 
-      unfolding maximal_def id_apply sorry (*TODO: easy proof by reductio*)
+    moreover from max have "maximal A M id"  
+      by (smt (verit) id_apply maximal_def)
     ultimately have "\<exists>M. maximal A M id \<and> X \<subseteq> M" by blast
   }
   thus "\<forall>X. A X \<longrightarrow> (\<exists>M. maximal A M id \<and> X \<subseteq> M)" by blast
