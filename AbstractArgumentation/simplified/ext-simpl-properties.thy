@@ -1,5 +1,5 @@
 theory "ext-simpl-properties"
-  imports "extensions-simpl"  "Zorn-lemma"
+  imports "extensions-simpl"  "../Zorn-lemma"
 begin
 
 (**** Testing definitions for extension-based semantics for argumentation frameworks ***)

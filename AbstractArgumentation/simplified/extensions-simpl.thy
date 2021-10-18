@@ -7,7 +7,7 @@
             logic programming and n-person games, Artificial Intelligence. (1995)
 *)
 theory "extensions-simpl"
-  imports base 
+  imports "../base"
 begin
 
 (***********************************************************)

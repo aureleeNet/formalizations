@@ -5,7 +5,7 @@
             Knowledge Engineering Review (2011) 
 *)
 theory "labellings-simpl"
-  imports base
+  imports "../base"
 begin
 
 (* The definitions below draw from [BCG 2011] but are stated for any arbitrarily labelled argument.
