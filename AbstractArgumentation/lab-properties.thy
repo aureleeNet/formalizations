@@ -106,6 +106,18 @@ lemma prop5_3to2_weak: \<open>greatest\<^sup>\<A> (completeLab\<^sup>\<A> att) L
   by (smt (verit, best) admissibleLabConflictfree Label.exhaust conflictfreeLab_def inset_def legallyOut_def outset_def undecset_def completeLabAdmissible)
 
 
+(* Prop 2 BCG*)
+lemma complete_iff_inoutlegal: \<open>completeLab\<^sup>\<A> att Lab \<longleftrightarrow> (\<forall>\<^sup>\<A> (\<lambda> a. ((Lab a) = In) \<longleftrightarrow> \<forall>\<^sup>\<A> (\<lambda>b. att b a \<longrightarrow> (Lab b) = Out)) ) \<and> (\<forall>\<^sup>\<A> (\<lambda> a. ((Lab a) = Out) \<longleftrightarrow> \<exists>\<^sup>\<A> (\<lambda>b. att b a \<and> (Lab b) = In)) )\<close>
+proof
+  show \<open>completeLab\<^sup>\<A> att Lab \<Longrightarrow> (\<forall>\<^sup>\<A> (\<lambda> a. ((Lab a) = In) \<longleftrightarrow> \<forall>\<^sup>\<A> (\<lambda>b. att b a \<longrightarrow> (Lab b) = Out)) ) \<and> (\<forall>\<^sup>\<A> (\<lambda> a. ((Lab a) = Out) \<longleftrightarrow> \<exists>\<^sup>\<A> (\<lambda>b. att b a \<and> (Lab b) = In)) )\<close>
+  unfolding completeLab_def  admissibleLab_def
+  by (smt (z3) Label.exhaust inset_def legallyIn_def legallyOut_def legallyUndec_def outset_def undecset_def) 
+next
+  show \<open> (\<forall>\<^sup>\<A> (\<lambda> a. ((Lab a) = In) \<longleftrightarrow> \<forall>\<^sup>\<A> (\<lambda>b. att b a \<longrightarrow> (Lab b) = Out)) ) \<and> (\<forall>\<^sup>\<A> (\<lambda> a. ((Lab a) = Out) \<longleftrightarrow> \<exists>\<^sup>\<A> (\<lambda>b. att b a \<and> (Lab b) = In)) ) \<Longrightarrow> completeLab\<^sup>\<A> att Lab\<close>
+    by (smt (verit, del_insts) Label.distinct(3) Label.distinct(5) admissibleLab_def completeLab_def inset_def legallyIn_def legallyOut_def legallyUndec_def outset_def undecset_def)
+qed
+
+
 (*********************************** Grounded and Preferred ********************************)
 
 (* the two provided definitions of grounded labellings are equivalent *)
