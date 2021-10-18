@@ -1,3 +1,13 @@
+(* D. Fuenmayor and A. Steen, August 2021 *)
+(* This file provides the correspondences between labellings and extensions
+   for argumentation frameworks. *)
+(* Auxiliary references: 
+ [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
+            Knowledge Engineering Review (2011) 
+ [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
+            logic programming and n-person games, Artificial Intelligence. (1995)
+*)
+
 theory correspondence
   imports extensions labellings "ext-properties"
 begin
@@ -94,7 +104,7 @@ lemma grounded_EL': "groundedLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E) \<lon
 
 (*ideal (still missing)*)
 
-lemma ideal_LE:  "idealLab\<^sup>\<A> att Lab \<longrightarrow> idealExt\<^sup>\<A> att (Lab2Ext Lab)" oops (* TODO: verify *)
+lemma ideal_LE:  "idealLab\<^sup>\<A> att Lab \<longrightarrow> idealExt\<^sup>\<A> att (Lab2Ext Lab)"  oops (* TODO: verify *)
 
 lemma ideal_LE': "idealExt\<^sup>\<A> att (Lab2Ext Lab) \<longrightarrow> idealLab\<^sup>\<A> att Lab"
   nitpick oops (*as expected*)
@@ -129,9 +139,8 @@ lemma semistable_LE': "semistableExt\<^sup>\<A> AF (Lab2Ext Lab) \<longrightarro
 
 lemma semistable_EL:  "semistableExt\<^sup>\<A> AF E \<longrightarrow> semistableLab\<^sup>\<A> AF (Ext2Lab\<^sup>\<A> AF E)"
   unfolding semistableExt_def semistableLab_def minimal_rel_def maximal_rel_def 
-  by (smt (verit, ccfv_threshold) Ext2Lab_def Lab2Ext_def Label.distinct(3) Label.exhaust Label.simps(6) admissibleExt_def admissibleLab_def complete_EL complete_LE completeLab_def conflictfreeExt_def inset_def legallyOut_def outset_def plusset_rel_def range_def undecset_def)
-  (* by (smt (verit, del_insts) Ext2Lab_def Lab2Ext_def Label.distinct(3) Label.exhaust Label.simps(6) admissibleLab_def completeLab_def complete_EL complete_LE inset_def legallyOut_def outset_def plusset_rel_def range_def undecset_def) *)
-
+  by (smt (verit, best) Ext2Lab_def Lab2Ext_def Label.distinct(3) Label.exhaust Label.simps(6) admissibleLab_def completeLab_def complete_EL complete_LE inset_def legallyOut_def outset_def plusset_rel_def range_def undecset_def)
+ 
 lemma semistable_EL': "semistableLab\<^sup>\<A> AF (Ext2Lab\<^sup>\<A> AF E) \<longrightarrow> semistableExt\<^sup>\<A> AF E"
   unfolding semistableExt_def semistableLab_def  minimal_rel_def maximal_rel_def
   by (smt (verit, ccfv_threshold) Ext2Lab_def Label.distinct(3) Label.simps(6) complete_EL complete_EL' range_def undecset_def)

@@ -1,3 +1,12 @@
+(* D. Fuenmayor and A. Steen, August 2021 *)
+(* This file contains experiments with and verification of properties of labelling-based semantics
+   for argumentation frameworks. *)
+(* Auxiliary references: 
+ [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
+            Knowledge Engineering Review (2011) 
+ [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
+            logic programming and n-person games, Artificial Intelligence. (1995)
+*)
 theory "lab-properties"
   imports labellings correspondence "ext-properties"
 begin
@@ -26,7 +35,11 @@ lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A>
 lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyIn\<^sup>\<A> att Lab x \<longrightarrow> in Lab x\<close> nitpick oops
 lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyOut\<^sup>\<A> att Lab x \<longrightarrow> out Lab x\<close> nitpick oops
 
-
+lemma DungFundLemma1Lab: \<open>admissibleLab\<^sup>\<A> att Lab \<and> defends\<^sup>\<A> att (in Lab) a \<longrightarrow>
+                                admissibleLab\<^sup>\<A> att ( \<lambda>x. if (x = a) then In else
+                                                     (if (att x a) then Out else (Lab x)) )\<close> 
+  unfolding defends_rel_def admissibleLab_def
+  by (smt (z3) Label.distinct(1) inset_def legallyIn_def legallyOut_def outset_def)
 (********************************** Complete **************************************)
 
 (* For complete labellings, legally-in/out does indeed imply in/out-labelled. *)
@@ -47,7 +60,7 @@ unfolding fixpoint_rel_def using completeLab2_def complete_defEq
 (* lemma \<open>\<exists>Lab. fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) (in Lab)\<close> oops (*TODO*)  *)
 
 (* complete labellings always exist *)
-lemma \<open>\<exists>Lab. completeLab\<^sup>\<A> att Lab\<close> oops (*TODO*) 
+lemma \<open>\<exists>Lab. completeLab\<^sup>\<A> att Lab\<close> oops (*See adequacy.thy*) 
 
 (* every complete labelling is admissible but not the other way round *)
 lemma completeLabAdmissible: \<open>completeLab\<^sup>\<A> att Lab \<Longrightarrow> admissibleLab\<^sup>\<A> att Lab\<close> by (simp add: completeLab_def)
@@ -79,7 +92,7 @@ lemma prop5_1iff2: \<open>minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab ou
   unfolding minimal_rel_def using complete_defEq completeLab2_def by (smt (z3) Label.exhaust legallyIn_def legallyOut_def)
 
 (* some of the following still required *)
-lemma prop5_1to3: \<open>minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longrightarrow> maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec\<close>  oops (*TODO*)
+lemma prop5_1to3: \<open>minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longrightarrow> maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec\<close> oops (*TODO*)
 lemma prop5_2to3: \<open>minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab out \<longrightarrow> maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec\<close> oops (*TODO*)
 lemma prop5_3to1: \<open>maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec \<longrightarrow> minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in\<close> oops (*TODO*)
 lemma prop5_3to2: \<open>maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec \<longrightarrow> minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab out\<close> oops (*TODO*)
@@ -175,38 +188,7 @@ lemma \<open>preferredLab\<^sup>\<A> att Lab \<Longrightarrow> stableLab\<^sup>\
 lemma \<open>\<exists>Lab. semistableLab\<^sup>\<A> att Lab\<close> oops (*TODO*)
 
 
-(************************************************************************)
-(* Inclusion relations as summary: Figure 12 of [BCG2011]
-   All but ONE verified.
-   The non-inclusion of the inverse directions has been checked with Nitpick in every case. 
- Also, the CF2 stuff is missing, I haven't looked at it so far.
- *)
 
-lemma \<open>stableLab\<^sup>\<A> att Lab \<Longrightarrow> semistableLab\<^sup>\<A> att Lab\<close> 
-  by (simp add: semistableLab_def stableLab_def undecset_def minimal_rel_def)
-
-lemma \<open>semistableLab\<^sup>\<A> att Lab \<Longrightarrow> preferredLab\<^sup>\<A> att Lab \<close> unfolding semistableLab_def preferredLab_def minimal_rel_def maximal_rel_def
-  by (smt (verit) Label.exhaust completeLab2_def complete_defEq inset_def legallyOut_def outset_def undecset_def)
-
-lemma \<open>stableLab\<^sup>\<A> att Lab \<Longrightarrow> stageLab\<^sup>\<A> att Lab\<close>
-  by (simp add: admissibleLabConflictfree stableLab_def stageLab_def undecset_def completeLabAdmissible minimal_rel_def)
-
-lemma \<open>preferredLab\<^sup>\<A> att Lab \<Longrightarrow> completeLab\<^sup>\<A> att Lab\<close>
-  by (simp add: preferredLab_def maximal_rel_def)
-
-lemma \<open>idealLab\<^sup>\<A> att Lab \<Longrightarrow> completeLab\<^sup>\<A> att Lab\<close> oops (*TODO*)
-
-lemma \<open>groundedLab\<^sup>\<A> att Lab \<Longrightarrow> completeLab\<^sup>\<A> att Lab\<close>
-  by (simp add: groundedLab_def minimal_rel_def)
-
-lemma \<open>completeLab\<^sup>\<A> att Lab \<Longrightarrow> admissibleLab\<^sup>\<A> att Lab\<close> 
-  by (simp add: admissibleLab_def completeLab_def)
-
-lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> conflictfreeLab\<^sup>\<A> att Lab\<close> 
-  by (simp add: admissibleLabConflictfree) 
-
-lemma \<open>stageLab\<^sup>\<A> att Lab \<Longrightarrow> conflictfreeLab\<^sup>\<A> att Lab\<close> 
-  by (simp add: stageLab_def minimal_rel_def)
 
 end
 

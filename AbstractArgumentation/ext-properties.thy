@@ -1,27 +1,16 @@
+(* D. Fuenmayor and A. Steen, August 2021 *)
+(* This file contains experiments with and verification of properties of extension-based semantics
+   for argumentation frameworks. *)
+(* Auxiliary references: 
+ [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
+            Knowledge Engineering Review (2011) 
+ [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
+            logic programming and n-person games, Artificial Intelligence. (1995)
+*)
 theory "ext-properties"
   imports extensions "Zorn-lemma"
 begin
 
-(*** Properties as used in JLC article section 4.2 ****)
-(* except for those about correspondence, they are in correspondence-rel.thy *)
-
-(* 1.  no self-attacks in conflictfree extension  [BCG textual on p.8] *)
-(*lemma \<open>conflictfreeExt\<^sup>\<A> att S \<Longrightarrow> \<not> (\<exists>A. (\<A> A) \<and> (S A) \<and> (att A A)) \<close> 
-  by (simp add: conflictfreeExt_def)*)
-
-lemma section42_prop1: \<open>conflictfreeExt\<^sup>\<A> att S \<Longrightarrow> \<not> (\<exists>\<^sup>\<A> (\<lambda>a. (S a) \<and> (att a a))) \<close> 
-  by (simp add: conflictfreeExt_def)
-
-
-(* Prop 2. [BCG]
-Lab complete iff for each A in Arg it holds that:
--- A is labelled in iff all its attackers are labelled out
--- A is labelled out iff it has at least one attacker labelled in ... todo in labellings *)
-
-
-lemma \<open>stableExt\<^sup>\<A> att S \<Longrightarrow> S \<approx>\<^sup>\<A> (\<lambda>x. \<not>(\<exists>b. (S b) \<and> (att b x)))\<close> oops
-
-(**** Testing definitions for extension-based semantics for argumentation frameworks ***)
 
 section \<open>Admissible and complete extensions - Tests\<close>
 
@@ -123,8 +112,31 @@ section \<open>Stable extensions - Tests\<close>
 lemma stableExt_defEq: "stableExt\<^sup>\<A> att S \<longleftrightarrow> stableExt2\<^sup>\<A> att S"
   by (smt (verit) range_def conflictfreeExt_def plusset_rel_def stableExt2_def stableExt_def)
 
+(* Prop. 11 from [BCG11] fully proven *)
+lemma bcgProp11_1: \<open>conflictfreeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A> \<Longrightarrow> admissibleExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
+  by (smt (verit) admissibleExt_def conflictfreeExt_def defends_rel_defEq minusset_rel_def)
+
+lemma bcgProp11_2: \<open>admissibleExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A> \<Longrightarrow> completeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
+  by (smt (verit, del_insts) admissibleExt_def completeExt_def conflictfreeExt_def defends_rel_def plusset_rel_def)
+
+lemma bcgProp11_3: \<open>completeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A> \<Longrightarrow> preferredExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
+proof -
+  assume *: \<open>completeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
+  have \<open>preferredExt\<^sup>\<A> att S\<close> unfolding stableExt_def 
+    by (smt (verit) "*" admissibleExt_def completeAdmissible conflictfreeExt_def id_apply maximal_rel_def plusset_rel_def preferredExt_def)
+  then show \<open>preferredExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close> 
+    by (simp add: "*")
+qed
+
+lemma bcgProp11_4: \<open>preferredExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A> \<Longrightarrow> [\<A>|att|S]\<^sup>+ \<approx>\<^sup>\<A> (\<lambda>x. \<A> x \<and> \<not>(S x))\<close>
+  by (metis preferredConflictfree range_def stableExt2_def stableExt_def stableExt_defEq)
+
+lemma bcgProp11_5: \<open>[\<A>|att|S]\<^sup>+ \<approx>\<^sup>\<A> (\<lambda>x. \<A> x \<and> \<not>(S x)) \<Longrightarrow> conflictfreeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
+  by (metis stableExt2_def stableExt_def stableExt_defEq)
+
 section \<open>Semistable extensions - Tests\<close>
 (*TODO*)
+
 
 section \<open>Stage extensions - Tests\<close>
 (*TODO*)
