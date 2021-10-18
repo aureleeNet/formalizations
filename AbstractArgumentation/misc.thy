@@ -122,6 +122,8 @@ definition supremum:: \<open>'a Set Set \<Rightarrow> 'a Set\<close> ("\<^bold>\
 
 definition upper_bound ("UB") where \<open>UB S \<equiv> \<lambda>A. \<forall>X. S X \<longrightarrow> X \<subseteq> A\<close>
 definition upper_bound_rel ("UB\<^sup>_") where \<open>UB\<^sup>U S \<equiv> \<lambda>A. \<forall>X. S X \<longrightarrow> (X \<subseteq>\<^sup>U A)\<close>
+lemma ub_rel_impl: \<open>UB S x \<Longrightarrow> UB\<^sup>U S x\<close> by (simp add: upper_bound_def upper_bound_rel_def)
+
 definition lower_bound ("LB") where \<open>LB S \<equiv> \<lambda>A. \<forall>X. S X \<longrightarrow> A \<subseteq> X\<close>
 definition lower_bound_rel ("LB\<^sup>_") where \<open>LB\<^sup>U S \<equiv> \<lambda>A. \<forall>X. S X \<longrightarrow> (A \<subseteq>\<^sup>U X)\<close>
 abbreviation \<open>is_supremum S U \<equiv> least (UB S) U id\<close>
@@ -187,6 +189,7 @@ definition chain :: "'a Set Set \<Rightarrow> bool"
   where "chain C \<equiv> \<forall>A. \<forall>B. C A \<longrightarrow> C B \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)"
 definition chain_rel :: "'a Set \<Rightarrow> 'a Set Set \<Rightarrow> bool" ("chain\<^sup>_")
   where "chain\<^sup>U C \<equiv> \<forall>A. \<forall>B. C A \<longrightarrow> C B \<longrightarrow> (A \<subseteq>\<^sup>U B \<or> B \<subseteq>\<^sup>U A)"
+lemma chain_rel_impl: \<open>chain C \<Longrightarrow> chain\<^sup>U C\<close> by (metis (full_types) chain_rel_def misc.chain_def)
 
 lemma chainDirected: "chain S \<longrightarrow> directed S" by (smt (verit, ccfv_SIG) directed_def chain_def)
 lemma chainDirected_rel: "chain\<^sup>U S \<longrightarrow> directed\<^sup>U S" by (smt (verit, best) chain_rel_def directed_rel_def)
