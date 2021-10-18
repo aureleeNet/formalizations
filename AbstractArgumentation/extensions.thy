@@ -121,7 +121,7 @@ definition semistableExt :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a 
 definition stageExt :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Set \<Rightarrow> bool\<close> ("stageExt\<^sup>_")
   where \<open>stageExt\<^sup>\<A> \<equiv> \<lambda>att S. maximal\<^sup>\<A> (conflictfreeExt\<^sup>\<A> att) S (range\<^sup>\<A> att)\<close>
 
-(* Technical: Include labellings into Defs collection *)
+(* Technical: Include extensions into Defs collection *)
 declare conflictfreeExt_def[Defs] admissibleExt_def[Defs] 
         completeExt_def[Defs] completeExt2_def[Defs] 
         groundedExt_def[Defs] groundedExt2_def[Defs] groundedExt3_def[Defs]
@@ -131,4 +131,3 @@ declare conflictfreeExt_def[Defs] admissibleExt_def[Defs]
         idealSet_def[Defs] idealExt_def[Defs] idealExt2_def[Defs]
         stageExt_def[Defs]
 end
-
