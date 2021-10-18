@@ -80,8 +80,8 @@ lemma \<open>groundedLab\<^sup>\<A> att Lab \<longleftrightarrow> least\<^sup>\<
 
 (* Lemma 4.13: Preferred labellings can equivalently be characterized by maximal in-sets
    and maximal out-sets [BCG11, Prop. 8]*)
-lemma preferred_max_inout: \<open>maximal\<^sup>\<A>  (preferredLab\<^sup>\<A> att) Lab in \<longleftrightarrow> maximal\<^sup>\<A>  (preferredLab\<^sup>\<A> att) Lab out \<close>
-  by (smt (verit, ccfv_SIG) maximal_rel_def preferredLab_def prop8)
+lemma preferred_max_inout: \<open>maximal\<^sup>\<A>  (completeLab\<^sup>\<A> att) Lab in \<longleftrightarrow> maximal\<^sup>\<A>  (completeLab\<^sup>\<A> att) Lab out \<close>
+  using prop8 by auto
 
 (* Relationships between different semantics: See ext-relationships.thy and lab-relationships.thy *)
 (* Correspondences: See correspondence.thy *)
