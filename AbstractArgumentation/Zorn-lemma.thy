@@ -60,17 +60,47 @@ lemma ZornLemma_\<omega>: "\<omega>-cpo A \<Longrightarrow> \<exists>M. maximal 
 lemma ZornLemma2_\<omega>: "\<omega>-cpo A \<Longrightarrow> \<forall>X. A X \<longrightarrow> (\<exists>M. maximal A M id \<and> X \<subseteq> M)" by (simp add: ZornLemma2 omegaCompleteUB)
 
 
-(****************************************************************)
-(************* TODO: Relativized variants ***********************)
-(****************************************************************)
+(* Restrict predicates to U before applying ordinary Zorn. *)
+lemma ZornLemma_rel: "allChainsHaveUB\<^sup>U A \<Longrightarrow> \<exists>M. maximal\<^sup>U A M id"
+proof -
+  assume bounds: "allChainsHaveUB\<^sup>U A"
+  let ?B = "\<lambda>Y. \<exists>X. A X \<and> Y = (U \<inter> X)"
+  have "allChainsHaveUB ?B"
+  proof (unfold allChainsHaveUB_def, intro allI impI)
+    fix C assume sub: "C \<subseteq> ?B" and ch: "chain C"
+    let ?D = "\<lambda>X. A X \<and> C (U \<inter> X)"
+    have "?D \<subseteq> A \<and> chain\<^sup>U ?D"
+      using ch unfolding chain_def chain_rel_def by blast
+    then obtain X where ax: "A X" and ub: "UB\<^sup>U ?D X"
+      using bounds[unfolded allChainsHaveUB_rel_def, rule_format, of "?D"] by blast
+    have "UB C (U \<inter> X)"
+      using sub ub unfolding upper_bound_def upper_bound_rel_def by blast
+    then show "\<exists>X. ?B X \<and> UB C X" using ax by blast
+  qed
+  then obtain Y where y: "maximal ?B Y id" using ZornLemma by blast
+  then obtain X where ax: "A X" and yx: "Y = (U \<inter> X)"
+    unfolding maximal_def by auto
+  have "maximal\<^sup>U A X id"
+    using y ax yx unfolding maximal_def maximal_rel_def id_def by (smt (verit))
+  then show ?thesis by blast
+qed
 
-(* TODO: prove the following bridge lemmas (seem prima facie true)*)
-lemma bridge1: "allChainsHaveUB A \<Longrightarrow> \<exists>M. maximal A M id \<Longrightarrow> \<exists>N. maximal\<^sup>U A N id" sorry
-lemma bridge2: "allChainsHaveUB\<^sup>U A \<Longrightarrow> allChainsHaveUB A" sorry
-
-lemma ZornLemma_rel: "allChainsHaveUB\<^sup>U A \<Longrightarrow> \<exists>M. maximal\<^sup>U A M id" by (simp add: ZornLemma bridge1 bridge2)
 lemma ZornLemma2_rel: "allChainsHaveUB\<^sup>U A \<Longrightarrow> \<forall>X. A X \<longrightarrow> (\<exists>M. maximal\<^sup>U A M id \<and> X \<subseteq>\<^sup>U M)"
-  using ZornLemma2 bridge1 bridge2 sorry (* TODO: prove(?)*)
+proof -
+  assume bounds: "allChainsHaveUB\<^sup>U A"
+  show ?thesis
+  proof (intro allI impI)
+    fix X assume ax: "A X"
+    let ?B = "\<lambda>Y. A Y \<and> X \<subseteq>\<^sup>U Y"
+    have "allChainsHaveUB\<^sup>U ?B"
+      using bounds ax unfolding allChainsHaveUB_rel_def upper_bound_rel_def
+      by (smt (verit))
+    then obtain M where m: "maximal\<^sup>U ?B M id"
+      using ZornLemma_rel by blast
+    then show "\<exists>M. maximal\<^sup>U A M id \<and> X \<subseteq>\<^sup>U M"
+      unfolding maximal_rel_def id_def by (smt (verit))
+  qed
+qed
 
 lemma ZornLemma_\<omega>_rel: "\<omega>-cpo\<^sup>U A \<Longrightarrow> \<exists>M. maximal\<^sup>U A M id" by (simp add: ZornLemma_rel omegaCompleteUB_rel)
 lemma ZornLemma2_\<omega>_rel: "\<omega>-cpo\<^sup>U A \<Longrightarrow> \<forall>X. A X \<longrightarrow> (\<exists>M. maximal\<^sup>U A M id \<and> X \<subseteq>\<^sup>U M)" by (simp add: ZornLemma2_rel omegaCompleteUB_rel)

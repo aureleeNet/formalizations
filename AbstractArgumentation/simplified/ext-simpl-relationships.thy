@@ -4,7 +4,7 @@
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
             Knowledge Engineering Review (2011) 
 *)
-theory "ext-relationships"
+theory "ext-simpl-relationships"
   imports "extensions-simpl" "ext-simpl-properties"
 begin
 
@@ -26,10 +26,8 @@ lemma complete_implies_admissible_ext: \<open>completeExt AF S \<Longrightarrow>
 lemma grounded_implies_complete_ext: \<open>groundedExt AF S \<Longrightarrow> completeExt AF S\<close>
   by (simp add: groundedExt_def minimal_def)
 
-declare [[smt_oracle]] (*TODO does not work without oracle-mode...yet*)
-lemma ideal_implies_complete_ext: \<open>idealExt2 AF S \<Longrightarrow> completeExt AF S\<close> 
-  unfolding idealExt2_def idealSet_def maximal_def preferredExt_def completeExt_def admissibleExt_def conflictfreeExt_def
-  using eq_id_iff \<F>_mono MONO_def defends_def by (smt (cvc4))
+lemma ideal_implies_complete_ext: \<open>idealExt2 AF S \<Longrightarrow> completeExt AF S\<close>
+  by (rule ideal_complete)
 
 lemma preferred_implies_complete_ext: \<open>preferredExt AF S \<Longrightarrow> completeExt AF S\<close>
   by (simp add: maximal_def preferredExt_def)

@@ -116,7 +116,7 @@ definition idealOld :: \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bo
 
 (*old definition is stronger than the current one*)
 lemma "idealOld AF Lab \<Longrightarrow> idealLab AF Lab" by (simp add: qidealLab_def idealOld_def idealLab_def)
-lemma "idealLab AF Lab \<Longrightarrow> idealOld AF Lab"  oops
+lemma "idealLab AF Lab \<Longrightarrow> idealOld AF Lab" nitpick oops (* counterexample: the old definition is stronger *)
 
 (*old definition entails the collapse of all preferred labellings*)
 lemma "idealOld AF Lab \<Longrightarrow> \<forall>L. preferredLab AF L \<longrightarrow> L \<cong> Lab"

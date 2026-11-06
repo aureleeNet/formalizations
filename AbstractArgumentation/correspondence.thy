@@ -9,12 +9,11 @@
 *)
 
 theory correspondence
-  imports extensions labellings "ext-properties"
+  imports extensions labellings "ext-relationships"
 begin
 
 (**********************************************************)
 (**** Correspondences between labellings and extensions ***)
-(********** (proved for all but ideal semantics) **********)
 (**********************************************************)
 
 (* Define mappings between extensions and labellings. *)
@@ -102,16 +101,101 @@ lemma grounded_EL': "groundedLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E) \<lon
   unfolding groundedExt_def groundedLab_def minimal_rel_def
   by (smt (verit, best) Ext2Lab_def Label.distinct(3) Label.simps(2) complete_EL complete_EL' id_def inset_def)
 
-(*ideal (still missing)*)
 
-lemma ideal_LE:  "idealLab\<^sup>\<A> att Lab \<longrightarrow> idealExt\<^sup>\<A> att (Lab2Ext Lab)"  oops (* TODO: verify *)
+(* ideal *)
+
+lemma Lab2Ext_Ext2Lab [simp]: "Lab2Ext (Ext2Lab\<^sup>\<A> att E) = E"
+  unfolding Lab2Ext_def Ext2Lab_def inset_def by auto
+
+lemma qideal_LE: "qidealLab\<^sup>\<A> att L \<Longrightarrow> idealSet\<^sup>\<A> att (Lab2Ext L)"
+  unfolding qidealLab_def idealSet_def lessOrEquallyCommittedLab_def
+  using admissible_LE preferred_EL by (metis Lab2Ext_Ext2Lab Lab2Ext_def)
+
+lemma canonical_below_complete:
+  assumes comp: "completeLab\<^sup>\<A> att L" and sub: "E \<subseteq>\<^sup>\<A> (in L)"
+  shows "Ext2Lab\<^sup>\<A> att E \<sqsubseteq>\<^sup>\<A> L"
+  using comp sub unfolding lessOrEquallyCommittedLab_def Ext2Lab_def
+    complete_defEq completeLab2_def
+  unfolding inset_def outset_def plusset_rel_def legallyOut_def
+  by (auto split: if_splits)
+
+lemma qideal_EL: "idealSet\<^sup>\<A> att E \<Longrightarrow> qidealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)"
+proof -
+  assume ideal: "idealSet\<^sup>\<A> att E"
+  have adm: "admissibleLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)"
+    using ideal admissible_EL unfolding idealSet_def by blast
+  have below: "Ext2Lab\<^sup>\<A> att E \<sqsubseteq>\<^sup>\<A> L"
+    if pref: "preferredLab\<^sup>\<A> att L" for L
+  proof -
+    have comp: "completeLab\<^sup>\<A> att L"
+      using pref unfolding preferredLab_def maximal_rel_def by blast
+    have sub: "E \<subseteq>\<^sup>\<A> (in L)"
+      using ideal preferred_LE pref unfolding idealSet_def Lab2Ext_def by blast
+    show ?thesis by (rule canonical_below_complete[OF comp sub])
+  qed
+  show ?thesis using adm below unfolding qidealLab_def by blast
+qed
+
+lemma admissible_canonical_below:
+  "admissibleLab\<^sup>\<A> att L \<Longrightarrow> L \<sqsubseteq>\<^sup>\<A> (Ext2Lab\<^sup>\<A> att (Lab2Ext L))"
+  unfolding lessOrEquallyCommittedLab_def Ext2Lab_def Lab2Ext_def
+  unfolding admissibleLab_def legallyOut_def plusset_rel_def inset_def outset_def
+  by (auto split: if_splits)
+
+lemma ideal_canonical:
+  assumes ideal: "idealLab\<^sup>\<A> att L"
+  shows "\<forall>x. \<A> x \<longrightarrow> L x = Ext2Lab\<^sup>\<A> att (Lab2Ext L) x"
+proof -
+  have q: "qidealLab\<^sup>\<A> att L" using ideal unfolding idealLab_def by blast
+  have canonical: "qidealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att (Lab2Ext L))"
+    by (rule qideal_EL[OF qideal_LE[OF q]])
+  have reverse_commit: "Ext2Lab\<^sup>\<A> att (Lab2Ext L) \<sqsubseteq>\<^sup>\<A> L"
+    using ideal canonical unfolding idealLab_def by blast
+  have forward_commit: "L \<sqsubseteq>\<^sup>\<A> (Ext2Lab\<^sup>\<A> att (Lab2Ext L))"
+    using q admissible_canonical_below unfolding qidealLab_def by blast
+  show ?thesis using reverse_commit forward_commit unfolding lessOrEquallyCommittedLab_def
+    by (smt (verit) Label.exhaust inset_def outset_def)
+qed
+
+lemma ideal_LE:  "idealLab\<^sup>\<A> att Lab \<longrightarrow> idealExt\<^sup>\<A> att (Lab2Ext Lab)"  
+  unfolding idealLab_def idealExt_def greatest_rel_def
+  using qideal_LE qideal_EL unfolding lessOrEquallyCommittedLab_def
+  by (metis Lab2Ext_Ext2Lab Lab2Ext_def id_apply)
 
 lemma ideal_LE': "idealExt\<^sup>\<A> att (Lab2Ext Lab) \<longrightarrow> idealLab\<^sup>\<A> att Lab"
   nitpick oops (*as expected*)
 
-lemma ideal_EL:  "idealExt\<^sup>\<A> att E \<longrightarrow> idealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)" oops (* TODO: verify *)
+lemma admissible_below_complete:
+  "admissibleLab\<^sup>\<A> att L \<Longrightarrow> completeLab\<^sup>\<A> att M \<Longrightarrow>
+   (in L) \<subseteq>\<^sup>\<A> (in M) \<Longrightarrow> L \<sqsubseteq>\<^sup>\<A> M"
+  unfolding lessOrEquallyCommittedLab_def admissibleLab_def complete_defEq
+    completeLab2_def legallyOut_def by blast
 
-lemma ideal_EL': "idealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E) \<longrightarrow> idealExt\<^sup>\<A> att E" oops (* TODO: verify *)
+lemma ideal_EL: "idealExt\<^sup>\<A> att E \<longrightarrow> idealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)"
+proof
+  assume ideal: "idealExt\<^sup>\<A> att E"
+  have ideal_set: "idealSet\<^sup>\<A> att E"
+    using ideal unfolding idealExt_def greatest_rel_def by blast
+  have comp: "completeLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)"
+    using ideal ideal_implies_complete_ext idealExt_defEq complete_EL by blast
+  have q: "qidealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)"
+    by (rule qideal_EL[OF ideal_set])
+  have below: "L \<sqsubseteq>\<^sup>\<A> (Ext2Lab\<^sup>\<A> att E)"
+    if l: "qidealLab\<^sup>\<A> att L" for L
+  proof -
+    have adm: "admissibleLab\<^sup>\<A> att L" using l unfolding qidealLab_def by blast
+    have sub: "(in L) \<subseteq>\<^sup>\<A> E"
+      using ideal qideal_LE[OF l]
+      unfolding idealExt_def greatest_rel_def Lab2Ext_def by simp
+    have sub': "(in L) \<subseteq>\<^sup>\<A> (in (Ext2Lab\<^sup>\<A> att E))"
+      using sub by (simp add: Ext2Lab_def inset_def)
+    show ?thesis by (rule admissible_below_complete[OF adm comp sub'])
+  qed
+  show "idealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E)" using q below unfolding idealLab_def by blast
+qed
+
+lemma ideal_EL': "idealLab\<^sup>\<A> att (Ext2Lab\<^sup>\<A> att E) \<longrightarrow> idealExt\<^sup>\<A> att E" 
+  by (metis Lab2Ext_Ext2Lab ideal_LE)
 
 (*stable*)
 

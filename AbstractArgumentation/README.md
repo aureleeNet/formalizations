@@ -18,6 +18,7 @@ In this folder, an encoding of Dung-style abstract argumentation frameworks (AFs
 ├── lab-relationships.thy       --- Proves inclusion relationships among labellings
 ├── misc.thy                    --- Miscellaneous basic definition (sets, relations, orderings, etc.)
 ├── README.md                   --- This README file
+├── ROOT                        --- Isabelle session root
 ├── simplified                  --- Contains simplified AF definitions (analogous naming scheme)
 │   ├── correspondence-simpl.thy
 │   ├── extensions-simpl.thy

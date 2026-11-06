@@ -1,7 +1,8 @@
 theory "model-generation"
   imports "extensions-simpl"  "labellings-simpl"
 begin
-nitpick_params [box=false]
+(* These are exploratory witness queries, including unsatisfiable requests. *)
+nitpick_params [box=false, expect=""]
 
 (* Example set-up from [BG2011], Figure 4 *)
 locale ExFig4 begin
@@ -128,7 +129,7 @@ lemma \<open>findFor' att admissibleLab Labs\<close> nitpick[satisfy, eval = "ca
 (*** complete semantics ***)
 lemma \<open>findFor' att completeExt Exts\<close> nitpick[satisfy, eval = "card Exts"] oops
 (* This gives us exactly the 3 sets predicted in [BG2011] p. 10: {}, {A, D}, {B, D} *)
-lemma \<open>findFor' att complete Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
+lemma \<open>findFor' att completeLab Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
 (* This gives us exactly the 3 labellings indicated in [BG2011] p. 10
    Labs =  {(A := In, B := Out, C := Out, D := In),
             (A := Out, B := In, C := Out, D := In),

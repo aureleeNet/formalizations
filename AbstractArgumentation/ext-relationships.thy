@@ -10,7 +10,7 @@ begin
 
 (************************************************************************)
 (* Inclusion relations as summary: Figure 12 of [BCG2011]
-   All but one verified. The non-inclusion of the inverse directions has been checked
+   All inclusions verified. The non-inclusion of the inverse directions has been checked
    with Nitpick in every case.  *)
 (************************************************************************)
 
@@ -25,10 +25,16 @@ lemma complete_implies_admissible_ext: \<open>completeExt\<^sup>\<A> AF S \<Long
 
 lemma grounded_implies_complete_ext: \<open>groundedExt\<^sup>\<A> AF S \<Longrightarrow> completeExt\<^sup>\<A> AF S\<close>
   by (simp add: groundedExt_def minimal_rel_def)
-
-
+  
 lemma ideal_implies_complete_ext: \<open>idealExt2\<^sup>\<A> AF S \<Longrightarrow> completeExt\<^sup>\<A> AF S\<close> 
-  oops (*TODO*)
+proof -
+  assume ideal: "idealExt2\<^sup>\<A> AF S"
+  have ideal_set: "idealSet\<^sup>\<A> AF S" using ideal unfolding idealExt2_def maximal_rel_def by blast
+  have "(S \<union> \<F>\<^sup>\<A> AF S) \<subseteq>\<^sup>\<A> S"
+    using ideal_closed_characteristic[OF ideal_set] ideal
+    unfolding idealExt_defEq idealExt_def greatest_rel_def by simp
+  thus ?thesis using ideal_set unfolding idealSet_def completeExt_def by blast
+qed
 
 lemma preferred_implies_complete_ext: \<open>preferredExt\<^sup>\<A> AF S \<Longrightarrow> completeExt\<^sup>\<A> AF S\<close>
   by (simp add: maximal_rel_def preferredExt_def)

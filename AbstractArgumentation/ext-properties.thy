@@ -15,9 +15,41 @@ begin
 section \<open>Admissible and complete extensions - Tests\<close>
 
 
-(* The greatest fixed point is not conflict-free. What about the least? *)
+(* The greatest fixed point is not conflict-free. *)
 lemma "gfp\<^sup>\<A> att S \<Longrightarrow> conflictfreeExt\<^sup>\<A> att S" nitpick oops (*countermodel found*)
-lemma "lfp\<^sup>\<A> att S \<Longrightarrow> conflictfreeExt\<^sup>\<A> att S" (*nitpick*) oops (*neither proven nor disproven*)
+
+(* The least fixed point is conflict-free. *)
+lemma "lfp\<^sup>\<A> att S \<Longrightarrow> conflictfreeExt\<^sup>\<A> att S"
+proof -
+  assume lfp: "lfp\<^sup>\<A> att S"
+  have least_fp: "least\<^sup>\<A> (fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att)) S id"
+    using lfp unfolding lfpR_def .
+  have fp_S: "fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) S"
+    by (rule conjunct1[OF least_fp[unfolded least_rel_def]])
+  have least_bound: "\<forall>X. fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) X \<longrightarrow> S \<subseteq>\<^sup>\<A> X"
+    by (rule conjunct2[OF least_fp[unfolded least_rel_def id_apply]])
+  (* N collects the arguments not attacked by its input; the characteristic
+     function is N composed with itself. *)
+  let ?N = "\<lambda>X a. \<not> (\<exists>b. \<A> b \<and> X b \<and> att b a)"
+  have square: "\<F>\<^sup>\<A> att X = ?N (?N X)" for X
+    unfolding defends_rel_def by auto
+  have respects_domain: "X \<approx>\<^sup>\<A> Y \<Longrightarrow> ?N X = ?N Y" for X Y
+    by auto
+  have square_S: "?N (?N S) \<approx>\<^sup>\<A> S"
+    using fp_S unfolding fixpoint_rel_def square .
+  have cube_S: "?N (?N (?N S)) = ?N S"
+    by (rule respects_domain[OF square_S])
+  have fp_N: "fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) (?N S)"
+    unfolding fixpoint_rel_def
+  proof (intro allI impI)
+    fix a assume "\<A> a"
+    show "\<F>\<^sup>\<A> att (?N S) a \<longleftrightarrow> ?N S a"
+      unfolding square by (rule fun_cong[OF cube_S])
+  qed
+  have "S \<subseteq>\<^sup>\<A> (?N S)"
+    using least_bound[THEN spec, of "?N S"] fp_N by blast
+  thus ?thesis unfolding conflictfreeExt_def by blast
+qed
 
 (* Emptyset is admissible*)
 lemma emptyAdmissible: \<open>admissibleExt\<^sup>\<A> att \<lbrace>-\<rbrace>\<close> by (simp add: admissibleExt_def conflictfreeExt_def)
@@ -92,21 +124,6 @@ lemma groundedConflictFree: "least\<^sup>\<A> (fixpoint\<^sup>\<A> (\<F>\<^sup>\
 lemma groundedExt_defEq2: "groundedExt2\<^sup>\<A> att S \<longleftrightarrow> groundedExt3\<^sup>\<A> att S"
   by (smt (verit, best) \<F>_mono completeExt2_def completeExt_defEq groundedConflictFree groundedExt2_def groundedExt3_def least_rel_def wKTl_relw)
 
-section \<open>Ideal extensions - Tests\<close>
-
-(* Ideal sets are closed under union *)
-lemma idealSetUnion: "idealSet\<^sup>\<A> att A \<Longrightarrow> idealSet\<^sup>\<A> att B \<Longrightarrow> idealSet\<^sup>\<A> att (A\<union>B)" proof -
-  assume 1: "idealSet\<^sup>\<A> att A" and 2: "idealSet\<^sup>\<A> att B"
-  hence 3: "conflictfreeExt\<^sup>\<A> att (A\<union>B)" unfolding idealSet_def   
-    by (smt (z3) preferredConflictfree preferredExist maxAdmissibleComplete preferredExt_def)
-  from 1 2 3 show "idealSet\<^sup>\<A> att (A\<union>B)" unfolding idealSet_def preferredExt_def admissibleExt_def by (smt (z3) MONO_def \<F>_mono')
-qed
-
-(* both definitions of ideal extensions (i.e. maximal ideal sets) are equivalent *)
-lemma idealExt_defEq: "idealExt2\<^sup>\<A> att S \<longleftrightarrow> idealExt\<^sup>\<A> att S" 
-  unfolding idealExt_def idealExt2_def maximal_rel_def greatest_rel_def
-  using idealSetUnion id_def by (smt (verit, del_insts)) 
-
 section \<open>Stable extensions - Tests\<close>
 
 lemma stableExt_defEq: "stableExt\<^sup>\<A> att S \<longleftrightarrow> stableExt2\<^sup>\<A> att S"
@@ -134,11 +151,62 @@ lemma bcgProp11_4: \<open>preferredExt\<^sup>\<A> att S \<and> (S \<union> [\<A>
 lemma bcgProp11_5: \<open>[\<A>|att|S]\<^sup>+ \<approx>\<^sup>\<A> (\<lambda>x. \<A> x \<and> \<not>(S x)) \<Longrightarrow> conflictfreeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
   by (metis stableExt2_def stableExt_def stableExt_defEq)
 
-section \<open>Semistable extensions - Tests\<close>
-(*TODO*)
 
+section \<open>Ideal extensions - Tests\<close>
+
+(* Ideal sets are closed under union *)
+lemma idealSetUnion: "idealSet\<^sup>\<A> att A \<Longrightarrow> idealSet\<^sup>\<A> att B \<Longrightarrow> idealSet\<^sup>\<A> att (A\<union>B)" proof -
+  assume 1: "idealSet\<^sup>\<A> att A" and 2: "idealSet\<^sup>\<A> att B"
+  hence 3: "conflictfreeExt\<^sup>\<A> att (A\<union>B)" unfolding idealSet_def   
+    by (smt (z3) preferredConflictfree preferredExist maxAdmissibleComplete preferredExt_def)
+  from 1 2 3 show "idealSet\<^sup>\<A> att (A\<union>B)" unfolding idealSet_def preferredExt_def admissibleExt_def by (smt (z3) MONO_def \<F>_mono')
+qed
+
+(* both definitions of ideal extensions (i.e. maximal ideal sets) are equivalent *)
+lemma idealExt_defEq: "idealExt2\<^sup>\<A> att S \<longleftrightarrow> idealExt\<^sup>\<A> att S" 
+  unfolding idealExt_def idealExt2_def maximal_rel_def greatest_rel_def
+  using idealSetUnion id_def by (smt (verit, del_insts)) 
+
+
+lemma ideal_closed_characteristic:
+  assumes ideal: "idealSet\<^sup>\<A> att S"
+  shows "idealSet\<^sup>\<A> att (S \<union> \<F>\<^sup>\<A> att S)"
+proof -
+  have adm: "admissibleExt\<^sup>\<A> att S" using ideal unfolding idealSet_def by blast
+  have below: "(S \<union> \<F>\<^sup>\<A> att S) \<subseteq>\<^sup>\<A> P"
+    if pref: "preferredExt\<^sup>\<A> att P" for P
+  proof -
+    have sub: "S \<subseteq>\<^sup>\<A> P" using ideal pref unfolding idealSet_def by blast
+    have mono: "\<F>\<^sup>\<A> att S \<subseteq>\<^sup>\<A> \<F>\<^sup>\<A> att P"
+      using \<F>_mono sub unfolding MONO_rel_def by blast
+    have "\<F>\<^sup>\<A> att P \<subseteq>\<^sup>\<A> P"
+      using pref unfolding preferredExt_def maximal_rel_def completeExt_def by auto
+    thus ?thesis using sub mono by blast
+  qed
+  show ?thesis using aux[OF adm] below unfolding idealSet_def by blast
+qed
 
 section \<open>Stage extensions - Tests\<close>
-(*TODO*)
+(* Theorem 4 of BCG *)
+lemma \<open>\<exists>Lab. stableExt\<^sup>\<A> att Lab \<Longrightarrow> \<forall>L. (stageExt\<^sup>\<A> att L \<longrightarrow> stableExt\<^sup>\<A> att L)\<close> 
+proof -
+  assume "\<exists>S. stableExt\<^sup>\<A> att S"
+  then obtain S where stable: "stableExt\<^sup>\<A> att S" by blast
+  have cf_S: "conflictfreeExt\<^sup>\<A> att S"
+    and covers: "\<A> \<subseteq> range\<^sup>\<A> att S"
+    using stable unfolding stableExt_def by auto
+  show ?thesis
+  proof (intro allI impI)
+    fix L assume stage: "stageExt\<^sup>\<A> att L"
+    have cf_L: "conflictfreeExt\<^sup>\<A> att L"
+      using stage unfolding stageExt_def maximal_rel_def by blast
+    have "range\<^sup>\<A> att L \<subseteq>\<^sup>\<A> range\<^sup>\<A> att S"
+      using covers by blast
+    hence "range\<^sup>\<A> att S \<approx>\<^sup>\<A> range\<^sup>\<A> att L"
+      using stage cf_S unfolding stageExt_def maximal_rel_def by blast
+    thus "stableExt\<^sup>\<A> att L"
+      using cf_L covers unfolding stableExt_def by blast
+  qed
+qed
 
 end

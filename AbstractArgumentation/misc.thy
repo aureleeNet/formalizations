@@ -18,9 +18,9 @@ declare [[syntax_ambiguity_warning = false]]
    subset, union, etc. symbols are hidden. *)
 no_notation
   subset  ("'(\<subset>')") and
-  subset  ("(_/ \<subset> _)" [51, 51] 50) and
+  subset  (\<open>(\<open>notation=\<open>infix \<subset>\<close>\<close>_/ \<subset> _)\<close> [51, 51] 50) and
   subset_eq  ("'(\<subseteq>')") and
-  subset_eq  ("(_/ \<subseteq> _)" [51, 51] 50) and
+  subset_eq  (\<open>(\<open>notation=\<open>infix \<subseteq>\<close>\<close>_/ \<subseteq> _)\<close> [51, 51] 50) and
   union (infixl "\<union>" 65) and
   inter (infixl "\<inter>" 70)
 
@@ -216,5 +216,27 @@ definition allChainsHaveUB_rel ("allChainsHaveUB\<^sup>_")
 
 lemma omegaCompleteUB: "\<omega>-cpo A \<Longrightarrow> allChainsHaveUB A" by (smt (verit, best) chains_def allChainsHaveUB_def least_def omegacomplete_def sup_char)
 lemma omegaCompleteUB_rel: "\<omega>-cpo\<^sup>U A \<Longrightarrow> allChainsHaveUB\<^sup>U A" by (smt (verit, best) allChainsHaveUB_rel_def omegacomplete_rel_def supremum_def upper_bound_rel_def)
+
+lemma finite_minimal_rel:
+  assumes fin: "finite {x. U x}" and nonempty: "\<exists>X. P X"
+  shows "\<exists>X. minimal\<^sup>U P X E"
+proof -
+  let ?F = "{S. \<exists>X. P X \<and> S = {x. U x \<and> E X x}}"
+  have "Set.subset_eq ?F (Pow {x. U x})" by auto
+  hence "finite ?F" using fin finite_subset by blast
+  moreover have "?F \<noteq> {}" using nonempty by blast
+  ultimately obtain S where s: "S \<in> ?F" "\<forall>T\<in>?F. T \<le> S \<longrightarrow> S = T"
+    using finite_has_minimal[of "?F"] by blast
+  then obtain X where x: "P X" "S = {x. U x \<and> E X x}" by blast
+  have "minimal\<^sup>U P X E"
+    using s(2) x unfolding minimal_rel_def by auto
+  thus ?thesis by blast
+qed
+
+lemma finite_minimal:
+  "finite (UNIV :: 'a set) \<Longrightarrow> (\<exists>X. P X) \<Longrightarrow>
+   \<exists>X. minimal P X (E :: 'b \<Rightarrow> 'a Set)"
+  using finite_minimal_rel[of "\<lambda>_. True" P E]
+  unfolding minimal_def minimal_rel_def by simp
 
 end

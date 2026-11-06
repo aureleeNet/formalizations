@@ -4,7 +4,6 @@ begin
 
 (**********************************************************)
 (**** Correspondences between labellings and extensions ***)
-(********** (proved for all but ideal semantics) **********)
 (**********************************************************)
 
 (* Define mappings between extensions and labellings. *)
@@ -32,7 +31,7 @@ lemma conflictfree_EL': "conflictfreeLab AF (Ext2Lab AF E) \<longrightarrow> con
 
 lemma admissible_LE:  "admissibleLab AF Lab \<longrightarrow> admissibleExt AF (Lab2Ext Lab)" 
   unfolding admissibleExt_def admissibleLab_def Lab2Ext_def
-  by (metis (mono_tags, hide_lams) Label.distinct(1) defends_def conflictfreeExt_def inset_def legallyIn_def legallyOut_def outset_def)
+  by (metis (mono_tags, opaque_lifting) Label.distinct(1) defends_def conflictfreeExt_def inset_def legallyIn_def legallyOut_def outset_def)
 
 lemma admissible_LE': "admissibleExt AF (Lab2Ext Lab) \<longrightarrow> admissible AF Lab"
   nitpick oops (*as expected*)
@@ -96,16 +95,101 @@ lemma grounded_EL': "groundedLab AF (Ext2Lab AF E) \<longrightarrow> groundedExt
   unfolding groundedExt_def groundedLab_def minimal_def
   by (smt (verit, del_insts) Ext2Lab_def Label.distinct(2) Label.distinct(3) complete_EL complete_EL' id_apply inset_def)
 
-(*ideal (still missing)*)
 
-lemma ideal_LE:  "idealLab AF Lab \<Longrightarrow> idealExt AF (Lab2Ext Lab)" oops (* TODO: verify *)
+lemma Lab2Ext_Ext2Lab [simp]: "Lab2Ext (Ext2Lab AF E) = E"
+  unfolding Lab2Ext_def Ext2Lab_def inset_def by auto
+
+lemma qideal_LE: "qidealLab AF L \<Longrightarrow> idealSet AF (Lab2Ext L)"
+  unfolding qidealLab_def idealSet_def lessOrEquallyCommittedLab_def
+  using admissible_LE preferred_EL by (metis Lab2Ext_Ext2Lab Lab2Ext_def)
+
+lemma canonical_below_complete:
+  assumes comp: "completeLab AF L" and sub: "E \<subseteq> (in L)"
+  shows "Ext2Lab AF E \<sqsubseteq> L"
+  using comp sub unfolding lessOrEquallyCommittedLab_def Ext2Lab_def
+    complete_defEq completeLab2_def
+  unfolding inset_def outset_def plusset_def legallyOut_def
+  by (auto split: if_splits)
+
+lemma qideal_EL: "idealSet AF E \<Longrightarrow> qidealLab AF (Ext2Lab AF E)"
+proof -
+  assume ideal: "idealSet AF E"
+  have adm: "admissibleLab AF (Ext2Lab AF E)"
+    using ideal admissible_EL unfolding idealSet_def by blast
+  have below: "Ext2Lab AF E \<sqsubseteq> L"
+    if pref: "preferredLab AF L" for L
+  proof -
+    have comp: "completeLab AF L"
+      using pref unfolding preferredLab_def maximal_def by blast
+    have sub: "E \<subseteq> (in L)"
+      using ideal preferred_LE pref unfolding idealSet_def Lab2Ext_def by blast
+    show ?thesis by (rule canonical_below_complete[OF comp sub])
+  qed
+  show ?thesis using adm below unfolding qidealLab_def by blast
+qed
+
+lemma admissible_canonical_below:
+  "admissibleLab AF L \<Longrightarrow> L \<sqsubseteq> (Ext2Lab AF (Lab2Ext L))"
+  unfolding lessOrEquallyCommittedLab_def Ext2Lab_def Lab2Ext_def
+  unfolding admissibleLab_def legallyOut_def plusset_def inset_def outset_def
+  by (auto split: if_splits)
+
+lemma ideal_canonical:
+  assumes ideal: "idealLab AF L"
+  shows "\<forall>x.  L x = Ext2Lab AF (Lab2Ext L) x"
+proof -
+  have q: "qidealLab AF L" using ideal unfolding idealLab_def by blast
+  have canonical: "qidealLab AF (Ext2Lab AF (Lab2Ext L))"
+    by (rule qideal_EL[OF qideal_LE[OF q]])
+  have reverse_commit: "Ext2Lab AF (Lab2Ext L) \<sqsubseteq> L"
+    using ideal canonical unfolding idealLab_def by blast
+  have forward_commit: "L \<sqsubseteq> (Ext2Lab AF (Lab2Ext L))"
+    using q admissible_canonical_below unfolding qidealLab_def by blast
+  show ?thesis using reverse_commit forward_commit unfolding lessOrEquallyCommittedLab_def
+    by (smt (verit) Label.exhaust inset_def outset_def)
+qed
+
+(* Ideal correspondences. *)
+
+lemma ideal_LE:  "idealLab AF Lab \<Longrightarrow> idealExt AF (Lab2Ext Lab)" 
+  unfolding idealLab_def idealExt_def greatest_def
+  using qideal_LE qideal_EL unfolding lessOrEquallyCommittedLab_def
+  by (metis Lab2Ext_Ext2Lab Lab2Ext_def id_apply)
 
 lemma ideal_LE': "idealExt AF (Lab2Ext Lab) \<longrightarrow> idealLab AF Lab"
   nitpick oops (*as expected*)
 
-lemma ideal_EL:  "idealExt AF E \<longrightarrow> idealLab AF (Ext2Lab AF E)" oops (* TODO: verify *)
+lemma admissible_below_complete:
+  "admissibleLab AF L \<Longrightarrow> completeLab AF M \<Longrightarrow>
+   (in L) \<subseteq> (in M) \<Longrightarrow> L \<sqsubseteq> M"
+  unfolding lessOrEquallyCommittedLab_def admissibleLab_def complete_defEq
+    completeLab2_def legallyOut_def by blast
 
-lemma ideal_EL': "idealLab AF (Ext2Lab AF E) \<longrightarrow> idealExt AF E" oops (* TODO: verify *)
+lemma ideal_EL: "idealExt AF E \<longrightarrow> idealLab AF (Ext2Lab AF E)"
+proof
+  assume ideal: "idealExt AF E"
+  have ideal_set: "idealSet AF E"
+    using ideal unfolding idealExt_def greatest_def by blast
+  have comp: "completeLab AF (Ext2Lab AF E)"
+    using ideal ideal_complete idealExt_defEq complete_EL by blast
+  have q: "qidealLab AF (Ext2Lab AF E)"
+    by (rule qideal_EL[OF ideal_set])
+  have below: "L \<sqsubseteq> (Ext2Lab AF E)"
+    if l: "qidealLab AF L" for L
+  proof -
+    have adm: "admissibleLab AF L" using l unfolding qidealLab_def by blast
+    have sub: "(in L) \<subseteq> E"
+      using ideal qideal_LE[OF l]
+      unfolding idealExt_def greatest_def Lab2Ext_def by simp
+    have sub': "(in L) \<subseteq> (in (Ext2Lab AF E))"
+      using sub by (simp add: Ext2Lab_def inset_def)
+    show ?thesis by (rule admissible_below_complete[OF adm comp sub'])
+  qed
+  show "idealLab AF (Ext2Lab AF E)" using q below unfolding idealLab_def by blast
+qed
+
+lemma ideal_EL': "idealLab AF (Ext2Lab AF E) \<longrightarrow> idealExt AF E" 
+  by (metis Lab2Ext_Ext2Lab ideal_LE)
 
 (*stable*)
 
@@ -113,7 +197,7 @@ lemma stable_LE:  "stableLab AF Lab \<longrightarrow> stableExt AF (Lab2Ext Lab)
   unfolding stableExt_def stableLab_def range_def
   by (metis (full_types) Lab2Ext_def Label.exhaust admissibleExt_def completeLab2_def completeExt_def complete_LE complete_defEq inset_def legallyIn_def outset_def plusset_def)
 
-lemma stable_LE': "stableExt AF (Lab2Ext Lab) \<longrightarrow> stable AF Lab"
+lemma stable_LE': "stableExt AF (Lab2Ext Lab) \<longrightarrow> stableLab AF Lab"
   nitpick oops (*as expected*)
 
 lemma stable_EL:  "stableExt AF E \<longrightarrow> stableLab AF (Ext2Lab AF E)"
@@ -128,7 +212,7 @@ lemma semistable_LE:  "semistableLab AF Lab \<longrightarrow> semistableExt AF (
   unfolding semistableExt_def semistableLab_def minimal_def maximal_def
   by (smt (verit, best) Ext2Lab_def Lab2Ext_def Label.exhaust completeLab2_def complete_EL complete_LE complete_defEq inset_def legallyOut_def outset_def plusset_def range_def undecset_def)
 
-lemma semistable_LE': "semistableExt AF (Lab2Ext Lab) \<longrightarrow> semistable AF Lab"
+lemma semistable_LE': "semistableExt AF (Lab2Ext Lab) \<longrightarrow> semistableLab AF Lab"
   nitpick oops (*as expected*)
 
 lemma semistable_EL:  "semistableExt AF E \<longrightarrow> semistableLab AF (Ext2Lab AF E)"

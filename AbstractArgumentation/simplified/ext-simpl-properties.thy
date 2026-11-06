@@ -15,7 +15,7 @@ lemma \<F>_greatestFP_ex: \<open>\<exists>S. greatest (fixpoint (\<F> AF)) S id\
 
 (* The greatest fixed point is not conflict-free. What about the least? *)
 lemma "conflictfreeExt AF (tgfp AF)" (*nitpick*) oops (*countermodel found*)
-lemma "conflictfreeExt AF (tlfp AF)" (*nitpick*) oops (*neither proven nor disproven*)
+
 
 (* Emptyset is admissible*)
 lemma emptyAdmissible: \<open>admissibleExt AF \<lbrace>-\<rbrace>\<close> by (simp add: admissibleExt_def conflictfreeExt_def)
@@ -83,6 +83,16 @@ lemma groundedExt_defEq1: "groundedExt AF S = groundedExt2 AF S"
 lemma groundedConflictFree: "least (fixpoint (\<F> AF)) S id \<longrightarrow> conflictfreeExt AF S" 
   by (smt (verit, ccfv_threshold) completeExt2_def completeExt_defEq conflictfreeExt_def id_apply least_def maxAdmissibleComplete maximal_def preferredExist)
 
+lemma tlfp_least: "least (fixpoint (\<F> AF)) (tlfp AF) id"
+proof -
+  obtain S where s: "least (fixpoint (\<F> AF)) S id" using \<F>_leastFP_ex by blast
+  have unique: "\<And>T. least (fixpoint (\<F> AF)) T id \<Longrightarrow> T = S"
+    using s unfolding least_def id_def by (auto intro!: ext)
+  show ?thesis unfolding tlfp_def by (rule theI[where P="\<lambda>T. least (fixpoint (\<F> AF)) T id" and a=S]; (rule s | rule unique))
+qed
+
+lemma "conflictfreeExt AF (tlfp AF)" using tlfp_least groundedConflictFree by blast
+
 (* We can show automatically that Dung's definition is equivalent to the other ones*)
 lemma groundedExt_defEq2: "groundedExt2 AF S = groundedExt3 AF S"
   by (smt (verit, best) \<F>_mono completeExt2_def completeExt_defEq groundedConflictFree groundedExt2_def groundedExt3_def least_def wKTl')
@@ -102,6 +112,35 @@ qed
 lemma idealExt_defEq: "idealExt2 AF S = idealExt AF S" 
   unfolding idealExt_def idealExt2_def maximal_def greatest_def
   using idealSetUnion id_def by (smt (verit, del_insts)) 
+
+
+lemma ideal_closed_characteristic:
+  assumes ideal: "idealSet AF S"
+  shows "idealSet AF (S \<union> \<F> AF S)"
+proof -
+  have adm: "admissibleExt AF S" using ideal unfolding idealSet_def by blast
+  have below: "(S \<union> \<F> AF S) \<subseteq> P"
+    if pref: "preferredExt AF P" for P
+  proof -
+    have sub: "S \<subseteq> P" using ideal pref unfolding idealSet_def by blast
+    have mono: "\<F> AF S \<subseteq> \<F> AF P"
+      using \<F>_mono sub unfolding MONO_def by blast
+    have "\<F> AF P \<subseteq> P"
+      using pref unfolding preferredExt_def maximal_def completeExt_def by auto
+    thus ?thesis using sub mono by blast
+  qed
+  show ?thesis using aux[OF adm] below unfolding idealSet_def by blast
+qed
+
+lemma ideal_complete: "idealExt2 AF S \<Longrightarrow> completeExt AF S"
+proof -
+  assume ideal: "idealExt2 AF S"
+  have ideal_set: "idealSet AF S" using ideal unfolding idealExt2_def maximal_def by blast
+  have "(S \<union> \<F> AF S) \<subseteq> S"
+    using ideal_closed_characteristic[OF ideal_set] ideal
+    unfolding idealExt_defEq idealExt_def greatest_def by simp
+  thus ?thesis using ideal_set unfolding idealSet_def completeExt_def by blast
+qed
 
 section \<open>Stable extensions - Tests\<close>
 

@@ -10,7 +10,7 @@ begin
 
 (************************************************************************)
 (* Inclusion relations as summary: Figure 12 of [BCG2011]
-   NOT YET All verified. The non-inclusion of the inverse directions has been checked
+   All inclusions verified. The non-inclusion of the inverse directions has been checked
    with Nitpick in every case.  *)
 (************************************************************************)
 
@@ -30,10 +30,10 @@ lemma preferred_implies_complete: \<open>preferredLab AF Lab \<Longrightarrow> c
   by (simp add: preferredLab_def maximal_def)
 
 lemma \<open>idealLab AF Lab \<Longrightarrow> completeLab AF Lab\<close>
-  unfolding idealLab_def qidealLab_def unfolding 
-  preferredMaxCompleteLabEq 
-  unfolding completeLab2_def complete_defEq
-  using DungFundLemma1Lab oops (* TODO: still not working...*)
+  using ideal_LE ideal_complete idealExt_defEq complete_EL ideal_canonical
+  unfolding completeLab_def admissibleLab_def legallyIn_def legallyOut_def
+    legallyUndec_def inset_def outset_def undecset_def
+  by (smt (verit))
   (* by (smt (z3) DungFundLemma1Lab admissible_EL admissible_LE admissible_def complete2_def complete_defEq defends_def inset_def legallyIn_def legallyOut_def lessOrEquallyCommittedLab_def outset_def plusset_def) *)
 
 

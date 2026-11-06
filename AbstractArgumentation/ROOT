@@ -1,0 +1,12 @@
+session Abstract_Argumentation = HOL +
+  options [document = false, threads = 2]
+  directories simplified
+  theories
+    adequacy
+    correspondence
+    "ext-relationships"
+    "lab-relationships"
+    "lab-simpl-properties"
+    "lab-simpl-relationships"
+    "ext-simpl-relationships"
+    "model-generation"
