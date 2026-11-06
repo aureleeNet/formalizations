@@ -1,5 +1,6 @@
-session Abstract_Argumentation = HOL +
-  options [document = false, threads = 2]
+chapter AFP
+
+session Abstract-Argumentation = HOL +
   directories simplified
   theories
     adequacy
@@ -10,3 +11,6 @@ session Abstract_Argumentation = HOL +
     "lab-simpl-relationships"
     "ext-simpl-relationships"
     "model-generation"
+  document_files
+    "root.bib"
+    "root.tex"
