@@ -33,9 +33,16 @@ lemma lab_decisions_consistent: "consistent_decisions A (lab_decisions A L)"
   unfolding consistent_decisions_def lab_decisions_def inset_def outset_def by auto
 
 lemma decisions_lab_inverse:
-  "consistent_decisions A S \<Longrightarrow> lab_decisions A (decisions_lab S) = S"
-  unfolding consistent_decisions_def lab_decisions_def decisions_lab_def inset_def outset_def
-  by (rule ext, rename_tac p, case_tac p, rename_tac a b, case_tac b; auto)
+  assumes cs: "consistent_decisions A S"
+  shows "lab_decisions A (decisions_lab S) = S"
+proof (rule ext)
+  fix p :: "'a \<times> bool"
+  obtain a b where p: "p = (a, b)" by (cases p) auto
+  show "lab_decisions A (decisions_lab S) p = S p"
+    using cs unfolding p consistent_decisions_def lab_decisions_def
+      decisions_lab_def inset_def outset_def
+    by (cases b) auto
+qed
 
 lemma consistent_decisions_subset:
   "consistent_decisions A T \<Longrightarrow> S \<subseteq> T \<Longrightarrow> consistent_decisions A S"
