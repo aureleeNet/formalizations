@@ -1,6 +1,6 @@
 chapter AFP
 
-session Abstract-Argumentation = HOL +
+session "Abstract-Argumentation" = HOL +
   options [timeout = 300]
   directories simplified
   theories

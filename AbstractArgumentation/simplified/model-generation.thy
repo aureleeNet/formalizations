@@ -1,6 +1,10 @@
 theory "model-generation"
   imports "extensions-simpl"  "labellings-simpl"
 begin
+
+section \<open>Generating Extensions and Labellings with Nitpick\<close>
+
+text \<open>We use Nitpick to explore extensions and labellings of example argumentation frameworks under different semantics.\<close>
 (* These are exploratory witness queries, including unsatisfiable requests. *)
 nitpick_params [box=false, expect=""]
 

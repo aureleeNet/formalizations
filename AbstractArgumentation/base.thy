@@ -10,20 +10,24 @@ theory base
   imports Main misc
 begin
 
+section \<open>Foundations of Abstract Argumentation\<close>
+
+text \<open>We define attack and defence, characteristic functions, argument labels, and basic notions of argument justification.\<close>
+
 (* A named collection of definitions related to AFs; it can later be referred to by its name 'Defs'. *)
 named_theorems Defs
 
-(* An abstract argumentation framework AF is characterized by its 
+text \<open>An abstract argumentation framework AF is characterized by its 
    set of arguments \<A> of type 'a Set (the arguments being of arbitrary type 'a)
    and the attack relation (usually referred to as 'att' or ... ) of type 'a Rel.
    The is usually bundled within a pair (\<A>, att) in literature. For simplicity
    (and technical reasons) we pass to each concept \<A> and att individually,
    instead of the pair AF = (\<A>, att). Any 2-ary function can be regarded
-   a nested unary function in terms of Currying. *)
+   a nested unary function in terms of Currying.\<close>
 
 (***********************************************************)
 (***********************************************************)
-(* Notions primarily related to extension based semantics. *)
+subsection \<open>Notions primarily related to extension based semantics.\<close>
 (***********************************************************)
 (***********************************************************)
 
@@ -81,11 +85,11 @@ definition gfpR ("gfp\<^sup>_") where \<open>gfp\<^sup>\<A> \<equiv> \<lambda>at
 
 (***********************************************************)
 (***********************************************************)
-(* Notions primarily related to Labelling based semantics. *)
+subsection \<open>Notions primarily related to Labelling based semantics.\<close>
 (***********************************************************)
 (***********************************************************)
 
-(* Generalising sets as "labellings", i.e. functions into some finite codomain (of "labels") *)
+text text \<open>Generalising sets as "labellings", i.e. functions into some finite codomain (of "labels").\<close>
 datatype Label = In | Out | Undec (*introduces a 3-element set of labels*)
 type_synonym 'a Labelling = \<open>'a \<Rightarrow> Label\<close> (*labellings as functions into "labels" *)
 
@@ -104,7 +108,7 @@ lemma OutUndecEquivLab: "(out(L1) \<approx> out(L2)) \<and> (undec(L1) \<approx>
 
 lemma equivLabId: "L1 \<cong> L2 \<longleftrightarrow> L1 = L2" using Label.exhaust ext by (metis (full_types) equivalentLab_def inset_def outset_def)
 
-(* Analogously we provide a relativized definition too (wrt. an universe set of arguments \<A>)*)
+text \<open>We provide a relativized definition too (wrt. an universe set of arguments \<A>).\<close>
 definition equivalentLab_rel :: \<open>'a Labelling \<Rightarrow> 'a Set \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("_\<cong>\<^sup>__") 
   where "L1 \<cong>\<^sup>\<A> L2 \<equiv> (in(L1) \<approx>\<^sup>\<A> in(L2)) \<and> (out(L1) \<approx>\<^sup>\<A> out(L2))"
 
@@ -120,13 +124,13 @@ lemma IdLabImplEquiv_rel: "L1 = L2 \<Longrightarrow> L1 \<cong>\<^sup>\<A> L2" (
 
 (***********************************************************)
 (***********************************************************)
-(*        Argument justification (cf. [BCG 2011] \<section>4).      *)
+subsection \<open>Argument justification\<close>
 (***********************************************************)
 (***********************************************************)
 
 type_synonym 'a LabSemantics = \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
 
-(* semantics has to be non-empty *)
+text \<open>semantics has to be non-empty\<close>
 definition skepticallyJustified :: \<open>'a LabSemantics \<Rightarrow> 'a Rel \<Rightarrow> 'a \<Rightarrow> bool\<close> ("sJ")
   where \<open>sJ S att \<equiv> \<lambda>arg. \<forall>Lab. ((\<exists>x. (Lab x) = In) \<and> (S att Lab)) \<longrightarrow> Lab(arg) = In\<close>
 (* non-emptiness implicit *)
@@ -141,15 +145,15 @@ lemma \<open>cJ S att a \<Longrightarrow> sJ S att a\<close> nitpick oops (* exp
 
 (***********************************************************)
 (***********************************************************)
-(*     Technical auxiliary definitions for experiments     *)
+subsection \<open>Technical auxiliary definitions for experiments\<close>
 (***********************************************************)
 (***********************************************************)
 
-(* The predicate below is actually equivalent to: S = (Prop att). 
-This is useful for obtaining at once *all* sets of extensions/labellings by using Nitpick *)
+text \<open>The predicate below is actually equivalent to: S = (Prop att). 
+This is useful for obtaining at once *all* sets of extensions/labellings by using Nitpick.\<close>
 abbreviation \<open>findFor  att Prop S \<equiv> \<forall>x.  S x  \<longleftrightarrow> Prop att x\<close>
-(* For technical reasons, we will often employ the equivalent formulation below.
-(when using sets instead of predicates, we get nitpick to output only the contained elements) *)
+text \<open>For technical reasons, we will often employ the equivalent formulation below.
+(when using sets instead of predicates, we get nitpick to output only the contained elements).\<close>
 abbreviation \<open>findFor' att Prop S \<equiv> \<forall>x. x \<in> S \<longleftrightarrow> Prop att x\<close>
 
 (* Technical: Include into Defs collection *)

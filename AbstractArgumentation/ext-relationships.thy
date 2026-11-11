@@ -8,6 +8,10 @@ theory "ext-relationships"
   imports "extensions" "ext-properties"
 begin
 
+section \<open>Inclusions between Extension Semantics\<close>
+
+text \<open>We establish inclusion relationships between the standard extension semantics.\<close>
+
 (************************************************************************)
 (* Inclusion relations as summary: Figure 12 of [BCG2011]
    All inclusions verified. The non-inclusion of the inverse directions has been checked

@@ -8,6 +8,10 @@ theory "labellings-simpl"
   imports "../base"
 begin
 
+section \<open>Labelling Semantics over the Full Argument Universe\<close>
+
+text \<open>We define legal labels and the standard labelling semantics without an explicit argument-domain restriction.\<close>
+
 (* The definitions below draw from [BCG 2011] but are stated for any arbitrarily labelled argument.
 They are required to state the different definions for labellings semantics.*)
 

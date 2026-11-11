@@ -2,9 +2,11 @@ theory "ext-simpl-properties"
   imports "extensions-simpl"  "../Zorn-lemma"
 begin
 
-(**** Testing definitions for extension-based semantics for argumentation frameworks ***)
+section \<open>Properties of Extension Semantics over the Full Universe\<close>
 
-section \<open>Admissible and complete extensions - Tests\<close>
+text \<open>We prove structural and existence results for extension semantics without an explicit argument-domain restriction.\<close>
+
+subsection \<open>Admissible and complete extensions\<close>
 
 (* \<F> is monotone (i.e. order preserving wrt. set inclusion). *)
 lemma \<F>_mono: "MONO (\<F> AF)" unfolding MONO_def by (metis defends_def)
@@ -28,7 +30,7 @@ lemma \<open>admissibleExt AF S \<Longrightarrow> completeExt AF S\<close> nitpi
 lemma completeExt_defEq: "completeExt AF S = completeExt2 AF S" 
   by (metis admissibleExt_def completeExt_def completeExt2_def fixpoint_def)
 
-section \<open>Preferred extensions - Tests\<close>
+subsection \<open>Preferred extensions\<close>
 
 (* Dung's "Fundamental lemma" ([Dung 1995] Lemma 10) *)
 lemma DungFundLemma1: "admissibleExt AF S \<Longrightarrow> \<forall>a. defends AF S a \<longrightarrow> admissibleExt AF  (S \<union> \<lbrace>a\<rbrace>)"
@@ -71,7 +73,7 @@ lemma preferredConflictfree: "A \<subseteq> B \<Longrightarrow> preferredExt AF 
   by (smt (verit, best) completeExt2_def completeExt_defEq conflictfreeExt_def maximal_def preferredExt_def)
 
 
-section \<open>Grounded extensions - Tests\<close>
+subsection \<open>Grounded extensions\<close>
 
 (* The first two definitions of grounded extensions are shown equivalent 
 (since \<F> has a least fixed point by the Knaster-Tarski theorem) *)
@@ -98,7 +100,7 @@ lemma groundedExt_defEq2: "groundedExt2 AF S = groundedExt3 AF S"
   by (smt (verit, best) \<F>_mono completeExt2_def completeExt_defEq groundedConflictFree groundedExt2_def groundedExt3_def least_def wKTl')
 
 
-section \<open>Ideal extensions - Tests\<close>
+subsection \<open>Ideal extensions\<close>
 
 (* Ideal sets are closed under union *)
 lemma idealSetUnion: "idealSet AF A \<Longrightarrow> idealSet AF B \<Longrightarrow> idealSet AF (A\<union>B)" proof -
@@ -142,15 +144,15 @@ proof -
   thus ?thesis using ideal_set unfolding idealSet_def completeExt_def by blast
 qed
 
-section \<open>Stable extensions - Tests\<close>
+subsection \<open>Stable extensions\<close>
 
 lemma stableExt_defEq: "stableExt AF S = stableExt2 AF S" 
   by (metis (mono_tags, lifting) range_def conflictfreeExt_def plusset_def stableExt2_def stableExt_def)
 
-section \<open>Semistable extensions - Tests\<close>
+subsection \<open>Semistable extensions\<close>
 (*TODO*)
 
-section \<open>Stage extensions - Tests\<close>
+subsection \<open>Stage extensions\<close>
 (*TODO*)
 
 end

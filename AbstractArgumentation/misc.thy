@@ -4,6 +4,10 @@ theory misc
   imports Main 
 begin
 
+section \<open>Sets, Orders, and Fixed Points\<close>
+
+text \<open>We develop predicate-based sets, domain-relative orders, fixed points, and auxiliary existence results.\<close>
+
 (* Technical detail: default settings to use for model finder Nitpick (inherited by all downstream theories) *)
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=2, atoms= a b c d]
 
@@ -11,11 +15,11 @@ declare [[syntax_ambiguity_warning = false]]
 
 (************** Basic set- and order-theoretical notions ******************)
 
-(* hide set notation for Isabelle's built-in sets: The aim is to provide an 
+text \<open>hide set notation for Isabelle's built-in sets: The aim is to provide an 
    embedding that is as shallow as possible (i.e., it uses no representation
    techniques that are specific to Isabelle/HOL. Still, we want to 
    use nice notation; this is why Isabelle/HOL predefined interpretations for 
-   subset, union, etc. symbols are hidden. *)
+   subset, union, etc. symbols are hidden.\<close>
 no_notation
   subset  ("'(\<subset>')") and
   subset  (\<open>(\<open>notation=\<open>infix \<subset>\<close>\<close>_/ \<subset> _)\<close> [51, 51] 50) and
@@ -24,20 +28,20 @@ no_notation
   union (infixl "\<union>" 65) and
   inter (infixl "\<inter>" 70)
 
-(* Sets and relations are vanilla type-polymorphic predicates.
+test \<open>Sets and relations are vanilla type-polymorphic predicates.
    'a is a type variable representing an arbitrary type.
    Both notions are repreesnted by their respective characteristic
-   functions. *)
+   functions.\<close
 (*sets as functions into a 2-element codomain *)
 type_synonym 'a Set = \<open>'a \<Rightarrow> bool\<close> 
 (*relations as curried 2-ary functions into a 2-element codomain *)
 type_synonym 'a Rel = \<open>'a \<Rightarrow> 'a \<Rightarrow> bool\<close>
 
-(* Introduce useful set operations and shorthand.
+text \<open>Introduce useful set operations and shorthand.
    They only make use of plain higher-order terms.
    Some of the symbols are, for presentation purposes, defined
    as infix symbols (using Isabelle/HOLs representation syntax);
-   this is just syntactical sugar. *)
+   this is just syntactical sugar.\<close>
 abbreviation union::\<open>'a Set \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close> (infixl "\<union>" 53) where \<open>A \<union> B \<equiv> \<lambda>x. (A x \<or> B x)\<close>
 abbreviation inter::\<open>'a Set \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close> (infixl "\<inter>" 54) where \<open>A \<inter> B \<equiv> \<lambda>x. (A x \<and> B x)\<close>
 abbreviation compl::\<open>'a Set \<Rightarrow> 'a Set\<close> ("\<midarrow>_") where \<open>\<midarrow>A \<equiv> \<lambda>x. \<not>A x\<close>
@@ -52,14 +56,10 @@ abbreviation set_cnstr1::\<open>'a\<Rightarrow>'a Set\<close> ("\<lbrace>_\<rbra
 abbreviation set_cnstr2::\<open>'a\<Rightarrow>'a\<Rightarrow>'a Set\<close> ("\<lbrace>_,_\<rbrace>") where \<open>\<lbrace>a,b\<rbrace> \<equiv> \<lambda>x. x = a \<or> x = b\<close>
 abbreviation set_cnstr3::\<open>'a\<Rightarrow>'a\<Rightarrow>'a\<Rightarrow>'a Set\<close> ("\<lbrace>_,_,_\<rbrace>") where \<open>\<lbrace>a,b,c\<rbrace> \<equiv> \<lambda>x. x = a \<or> x = b \<or> x = c\<close>
 
-(*TODO: is it possible to also add binder notation to the ones below?*)
 (*Restricted quantifiers that take a 'domain' as additional parameter (interpreted as the predicate 'exists')*)
 abbreviation mforall_rel::"('a\<Rightarrow>bool)\<Rightarrow>('a\<Rightarrow>bool)\<Rightarrow>bool" ("\<forall>\<^sup>_ _") where \<open>\<forall>\<^sup>U P \<equiv> \<forall>x. U x \<longrightarrow> (P x)\<close> 
 abbreviation mexists_rel::"('a\<Rightarrow>bool)\<Rightarrow>('a\<Rightarrow>bool)\<Rightarrow>bool" ("\<exists>\<^sup>_ _") where \<open>\<exists>\<^sup>U P \<equiv> \<exists>x. U x  \<and>  (P x)\<close>
 lemma relQuantifierDual: \<open>\<forall>\<^sup>A P \<longleftrightarrow> \<not>(\<exists>\<^sup>A (\<lambda>x. \<not>(P x)))\<close> by simp
-
-(* abbreviation mforall_relB (binder "\<forall>\<^sup>_" [55]56) where "\<forall>\<^sup>U x. P x \<equiv> \<forall>\<^sup>U P" *)
-(* abbreviation mexists_relB (binder "\<exists>\<^sup>_" [55]56) where "\<exists>\<^sup>U x. P x \<equiv> \<exists>\<^sup>U P" *)
 
 lemma \<open>A \<subset>\<^sup>U B \<longrightarrow> A \<subset> B\<close> nitpick oops
 lemma \<open>A \<subset> B \<longrightarrow> A \<subset>\<^sup>U B\<close> nitpick oops
@@ -81,7 +81,7 @@ definition least_rel ("least\<^sup>_ _ _ _")
 definition greatest_rel ("greatest\<^sup>_ _ _ _")
   where \<open>greatest\<^sup>U Prop Obj E \<equiv> Prop Obj \<and> (\<forall>X. Prop X \<longrightarrow> (E X) \<subseteq>\<^sup>U (E Obj))\<close>
 
-(* Verified: Least (resp. greatest) sets are minimal (resp. maximal) but not the other way round. *)
+text \<open>Verified: Least (resp. greatest) sets are minimal (resp. maximal) but not the other way round.\<close>
 lemma leastMin: \<open>least Prop Obj E \<longrightarrow>  minimal Prop Obj E\<close> unfolding least_def minimal_def by blast
 lemma leastMin_rel: \<open>least\<^sup>U Prop Obj E \<longrightarrow>  minimal\<^sup>U Prop Obj E\<close> unfolding least_rel_def minimal_rel_def by blast
 lemma greatestMax: \<open>greatest Prop Obj E \<longrightarrow>  maximal Prop Obj E\<close> unfolding greatest_def maximal_def by blast
@@ -98,13 +98,13 @@ lemma \<open>maximal\<^sup>U Prop Obj E \<longrightarrow> maximal Prop Obj E\<cl
 lemma least_rel_impl:    \<open>least Prop Obj E \<longrightarrow> least\<^sup>U Prop Obj E\<close> by (simp add: least_def least_rel_def)
 lemma greatest_rel_impl: \<open>greatest Prop Obj E \<longrightarrow> greatest\<^sup>U Prop Obj E\<close> by (simp add: greatest_def greatest_rel_def)
 
-(* Verified: Least and greatest elements are unique (wrt. their extensions by E). *)
+text \<open>Verified: Least and greatest elements are unique (wrt. their extensions by E).\<close>
 lemma leastUnique:      \<open>least Prop A E \<and> least Prop B E \<longrightarrow> E(A) \<approx> E(B)\<close> by (metis least_def)
 lemma leastUnique_rel: \<open>least\<^sup>U Prop A E \<and> least\<^sup>U Prop B E \<longrightarrow> E(A) \<approx>\<^sup>U E(B)\<close> by (metis least_rel_def)
 lemma greatestUnique:      \<open>greatest Prop A E \<and> greatest Prop B E \<longrightarrow> E(A) \<approx> E(B)\<close> by (metis greatest_def)
 lemma greatestUnique_rel: \<open>greatest\<^sup>U Prop A E \<and> greatest\<^sup>U Prop B E \<longrightarrow> E(A) \<approx>\<^sup>U E(B)\<close> by (metis greatest_rel_def)
 
-(* Verified: If there exists a least/greatest element then minimal/maximal collapse to least/greatest. *)
+text \<open>Verified: If there exists a least/greatest element then minimal/maximal collapse to least/greatest.\<close>
 lemma minLeastCollapse:      \<open>\<exists>A. least Prop A E \<Longrightarrow> \<forall>B. minimal Prop B E \<longrightarrow>  least Prop B E\<close> 
   by (smt (verit, best) least_def minimal_def)
 lemma minLeastCollapse_rel: \<open>\<exists>A. least\<^sup>U Prop A E \<Longrightarrow> \<forall>B. minimal\<^sup>U Prop B E \<longrightarrow>  least\<^sup>U Prop B E\<close> 
@@ -115,8 +115,9 @@ lemma maxGreatestCollapse_rel: \<open>\<exists>A. greatest\<^sup>U Prop A E \<Lo
   by (smt (verit, best) greatest_rel_def maximal_rel_def)
 
 
-(* In what follows we verify some useful results concerning the existence of least/greatest fixed points of monotone functions. *)
-(* We start by defining infinite meet (infimum) and infinite join (supremum) operations,*)
+text \<open>In what follows we verify some useful results concerning the existence of
+     least/greatest fixed points of monotone functions.
+    We start by defining infinite meet (infimum) and infinite join (supremum) operations ...\<close>
 definition infimum::  \<open>'a Set Set \<Rightarrow> 'a Set\<close> ("\<^bold>\<And>_") where \<open>\<^bold>\<And>S \<equiv> \<lambda>w. \<forall>X. S X \<longrightarrow> X w\<close>
 definition supremum:: \<open>'a Set Set \<Rightarrow> 'a Set\<close> ("\<^bold>\<Or>_") where \<open>\<^bold>\<Or>S \<equiv> \<lambda>w. \<exists>X. S X  \<and>  X w\<close>
 
@@ -129,19 +130,19 @@ definition lower_bound_rel ("LB\<^sup>_") where \<open>LB\<^sup>U S \<equiv> \<l
 abbreviation \<open>is_supremum S U \<equiv> least (UB S) U id\<close>
 abbreviation \<open>is_infimum  S L \<equiv> greatest (LB S) L id\<close>
 
-(* ... and show that the corresponding lattice is complete: *)
+text \<open> ... and show that the corresponding lattice is complete:\<close>
 lemma sup_char: \<open>is_supremum S \<^bold>\<Or>S\<close> unfolding supremum_def least_def upper_bound_def by auto
 lemma inf_char: \<open>is_infimum S \<^bold>\<And>S\<close> unfolding infimum_def greatest_def lower_bound_def by auto
 
 lemma sup_char_rel: \<open>is_supremum (S \<inter> U) (\<^bold>\<Or>S \<inter> U) \<close> by (simp add: sup_char)
 lemma inf_char_rel: \<open>is_infimum (S \<inter> U) (\<^bold>\<And>S \<inter> U) \<close> by (simp add: inf_char)
 
-(* Definition of a monotone function.*)
+text \<open>Definition of a monotone function.\<close>
 definition \<open>MONO F \<equiv> \<forall>A B. A \<subseteq> B \<longrightarrow> F A \<subseteq> F B\<close>
 definition MONO_rel ("MONO\<^sup>_") where \<open>MONO\<^sup>U F \<equiv> \<forall>A B. (A \<subseteq>\<^sup>U B \<longrightarrow> F A \<subseteq>\<^sup>U F B)\<close>
 
-(* We speak of argument-sets being fixed points of functions (mapping argument-sets to argument-sets).
-For a given function we define in the usual way a fixed-point predicate for argument-sets.*)
+text \<open>We speak of argument-sets being fixed points of functions (mapping argument-sets to argument-sets).
+For a given function we define in the usual way a fixed-point predicate for argument-sets.\<close>
 definition fixpoint :: \<open>('a Set \<Rightarrow> 'a Set) \<Rightarrow> 'a Set \<Rightarrow> bool\<close> 
   where \<open>fixpoint \<phi> \<equiv> \<lambda>S. \<phi>(S) \<approx>  S\<close>
 definition fixpoint_rel:: \<open>'a Set \<Rightarrow> ('a Set \<Rightarrow> 'a Set) \<Rightarrow> 'a Set \<Rightarrow> bool\<close> ("fixpoint\<^sup>_")
@@ -150,12 +151,12 @@ definition fixpoint_rel:: \<open>'a Set \<Rightarrow> ('a Set \<Rightarrow> 'a S
 lemma fp_prop1: \<open>fixpoint \<phi> S \<Longrightarrow> fixpoint\<^sup>U \<phi> S\<close> by (simp add: fixpoint_rel_def fixpoint_def)
 lemma fp_prop2: \<open>\<forall>U. least\<^sup>U (\<lambda>S. fixpoint\<^sup>U F S) S id \<Longrightarrow> least (fixpoint F) S id\<close> unfolding fixpoint_rel_def fixpoint_def least_def least_rel_def by metis
 
-(* Verified: Least/Greatest fixedpoint is indeed a fixedpoint and is least/greatest. *)
+text \<open>Verified: Least/Greatest fixedpoint is indeed a fixedpoint and is least/greatest.\<close>
 lemma    \<open>(least (fixpoint F) S id) = (fixpoint F S \<and> (\<forall>X. fixpoint F X \<longrightarrow> S \<subseteq> X))\<close> by (simp add: least_def)
 lemma \<open>(greatest (fixpoint F) S id) = (fixpoint F S \<and> (\<forall>X. fixpoint F X \<longrightarrow> X \<subseteq> S))\<close> by (simp add: greatest_def)
 
-(* A weak formulation of the Knaster-Tarski Theorem:
- Any monotone function on a powerset lattice has a least/greatest fixed-point.*)
+text \<open>A weak formulation of the Knaster-Tarski Theorem:
+ Any monotone function on a powerset lattice has a least/greatest fixed-point.\<close>
 lemma wKTl': \<open>MONO F \<Longrightarrow> let S = \<^bold>\<And>(\<lambda>X. F X \<subseteq> X) in (least (fixpoint F) S id)\<close>
   unfolding least_def fixpoint_def MONO_def by (smt (z3) eq_id_iff infimum_def)
 lemma wKTg': \<open>MONO F \<Longrightarrow> let S = \<^bold>\<Or>(\<lambda>X. X \<subseteq> F X) in (greatest (fixpoint F) S id)\<close>
@@ -174,17 +175,17 @@ lemma wKTg_rel: \<open>MONO\<^sup>U F \<Longrightarrow> \<exists>S. greatest (fi
 lemma wKTg_relw: \<open>MONO\<^sup>U F \<Longrightarrow> \<exists>S. greatest\<^sup>U (fixpoint\<^sup>U F) S id\<close> using wKTg_rel by (metis greatest_rel_impl)
 
 
-(* Directed sets are sets for which each pair of elements have an upper bound in the set*)
+text \<open>Directed sets are sets for which each pair of elements have an upper bound in the set.\<close>
 definition directed :: "'a Set Set \<Rightarrow> bool" 
   where "directed S \<equiv> \<forall>A B. S A \<and> S B \<longrightarrow> (\<exists>C. S C \<and> A \<subseteq> C \<and> B \<subseteq> C)"
 definition directed_rel :: "'a Set \<Rightarrow> 'a Set Set \<Rightarrow> bool" ("directed\<^sup>_")
   where "directed\<^sup>U S \<equiv> \<forall>A B. S A \<and> S B \<longrightarrow> (\<exists>C. S C \<and> A \<subseteq>\<^sup>U C \<and> B \<subseteq>\<^sup>U C)"
 
-(* Every maximal element of a directed set is a greatest element*)
+text \<open>Every maximal element of a directed set is a greatest element.\<close>
 lemma directedMaxGreatest: "directed A \<Longrightarrow> \<forall>B. maximal A B id \<longrightarrow>  greatest A B id"
   by (smt (verit, del_insts) directed_def greatest_def id_apply maximal_def)
 
-(* A particular sort of directed set is a chain: *)
+text \<open>A particular sort of directed set is a chain.\<close>
 definition chain :: "'a Set Set \<Rightarrow> bool"
   where "chain C \<equiv> \<forall>A. \<forall>B. C A \<longrightarrow> C B \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)"
 definition chain_rel :: "'a Set \<Rightarrow> 'a Set Set \<Rightarrow> bool" ("chain\<^sup>_")
@@ -196,14 +197,14 @@ lemma chainDirected_rel: "chain\<^sup>U S \<longrightarrow> directed\<^sup>U S" 
 lemma "directed S \<longrightarrow> chain S"  oops (* counterexample found, as expected*)
 lemma "directed\<^sup>U S \<longrightarrow> chain\<^sup>U S"  oops (* counterexample found, as expected*)
 
-(* A is called directed-complete (aka. dcpo) if every subset that is directed has a supremum in A*)
+text \<open>A is called directed-complete (aka. dcpo) if every subset that is directed has a supremum in A.\<close>
 definition omegacomplete ("\<omega>-cpo _")    where "\<omega>-cpo A \<equiv> \<forall>C. C \<subseteq> A \<and>  chain C  \<longrightarrow>  A(\<^bold>\<Or>C)"
 definition omegacomplete_rel ("\<omega>-cpo\<^sup>_ _")    where "\<omega>-cpo\<^sup>U A \<equiv> \<forall>C. C \<subseteq> A \<and>  chain\<^sup>U C  \<longrightarrow>  A(\<^bold>\<Or>C \<inter> U)"
 (* A is called \<omega>-complete (aka. \<omega>-cpo) if every subset that is a chain has a supremum in A*)
 definition directedcomplete ("dcpo _") where "dcpo A \<equiv> \<forall>D. D \<subseteq> A \<and> directed D \<longrightarrow> A(\<^bold>\<Or>D)"
 definition directedcomplete_rel ("dcpo\<^sup>_ _") where "dcpo\<^sup>U A \<equiv> \<forall>D. D \<subseteq> A \<and> directed\<^sup>U D \<longrightarrow> A(\<^bold>\<Or>D \<inter> U)"
 
-(* Clearly, dcpos are also \<omega>-cpos (but not viceversa)*)
+text \<open>Clearly, dcpos are also \<omega>-cpos (but not viceversa).\<close>
 lemma dcpo_\<omega>: "dcpo A \<longrightarrow> \<omega>-cpo A" by (simp add: chainDirected directedcomplete_def omegacomplete_def)
 lemma dcpo_\<omega>_rel: "dcpo\<^sup>U A \<longrightarrow> \<omega>-cpo\<^sup>U A" by (simp add: chainDirected_rel directedcomplete_rel_def omegacomplete_rel_def)
 lemma "\<omega>-cpo A \<longrightarrow> dcpo A" (*nitpick*) oops (* counterexamples are infinite*)

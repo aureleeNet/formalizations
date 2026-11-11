@@ -8,6 +8,10 @@ theory "lab-simpl-relationships"
   imports "labellings-simpl"  "lab-simpl-properties"
 begin
 
+section \<open>Inclusions between Labelling Semantics over the Full Universe\<close>
+
+text \<open>We establish inclusion relationships between labelling semantics over the full argument universe.\<close>
+
 (************************************************************************)
 (* Inclusion relations as summary: Figure 12 of [BCG2011]
    All inclusions verified. The non-inclusion of the inverse directions has been checked

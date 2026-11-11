@@ -10,6 +10,10 @@ theory "extensions-simpl"
   imports "../base"
 begin
 
+section \<open>Extension Semantics over the Full Argument Universe\<close>
+
+text \<open>We define the standard extension semantics with every element of the argument type included in the framework.\<close>
+
 (***********************************************************)
 (* Conflict-free extensions.                               *)
 (***********************************************************)

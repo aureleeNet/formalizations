@@ -2,9 +2,13 @@ theory "lab-order"
   imports labellings "Zorn-lemma"
 begin
 
-(* A decision is an argument together with its In/Out label (True/False).
+section \<open>The Commitment Order on Labellings\<close>
+
+text \<open>We represent labellings by In and Out decisions and establish order and fixed-point results for existence proofs.\<close>
+
+text \<open>A decision is an argument together with its In/Out label (True/False).
    Undec is represented by absence of both decisions.  This is an order
-   representation of labellings for the generic powerset lemmas in misc. *)
+   representation of labellings for the generic powerset lemmas in misc.\<close>
 definition lab_decisions :: "'a Set \<Rightarrow> 'a Labelling \<Rightarrow> ('a \<times> bool) Set"
   where "lab_decisions A L p \<equiv> A (fst p) \<and>
     (if snd p then in L (fst p) else out L (fst p))"

@@ -10,6 +10,10 @@ theory extensions
   imports base 
 begin
 
+section \<open>Extension-Based Argumentation Semantics\<close>
+
+text \<open>We define the standard extension semantics over an explicitly restricted domain of arguments.\<close>
+
 (***********************************************************)
 (* Conflict-free extensions.                               *)
 (***********************************************************)

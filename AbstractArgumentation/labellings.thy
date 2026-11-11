@@ -8,12 +8,16 @@ theory labellings
   imports base
 begin
 
+section \<open>Labelling-Based Argumentation Semantics\<close>
+
+text \<open>We define legal argument labels, commitment between labellings, and the standard labelling semantics over a restricted domain.\<close>
+
 (***********************************************************)
 (* Preliminary notions.                                    *)
 (***********************************************************)
 
-(* The definitions below draw from [BCG 2011] but are stated for any arbitrarily labelled argument.
-   They are required to state the different definitions for labellings semantics.*)
+text \<open>The definitions below draw from [BCG 2011] but are stated for any arbitrarily labelled argument.
+   They are required to state the different definitions for labellings semantics.\<close>
 
 (* An argument is termed legally-in if all of its attackers are labelled out ([BCG 2011] Def. 9). *)
 definition legallyIn :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> 'a \<Rightarrow> bool\<close> ("legallyIn\<^sup>_")
@@ -38,9 +42,9 @@ definition compatibleLab :: \<open>'a Labelling \<Rightarrow> 'a Set \<Rightarro
 (* Conflict-free labellings.                               *)
 (***********************************************************)
 
-(* A labelling is termed conflict-free when ([BCG2011] Def. 16)
+text \<open>A labelling is termed conflict-free when ([BCG2011] Def. 16)
  (i) every in-labelled argument is not legally-out (i.e. it does not have an attacked that is in-labelled);
-(ii) every out-labelled argument is legally-out. *)  
+(ii) every out-labelled argument is legally-out.\<close>
 definition conflictfreeLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("conflictfreeLab\<^sup>_")
   where \<open>conflictfreeLab\<^sup>\<A> \<equiv> \<lambda>att Lab. \<forall>x. \<A> x \<longrightarrow> (in Lab x  \<longrightarrow> \<not>legallyOut\<^sup>\<A> att Lab x) \<and> (out Lab x \<longrightarrow> legallyOut\<^sup>\<A> att Lab x)\<close>
 
@@ -49,9 +53,9 @@ definition conflictfreeLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> '
 (* Admissible labellings.                                  *)
 (***********************************************************)
 
-(* A labelling is termed admissible when ([BCG2011] Def. 10)
+text \<open>A labelling is termed admissible when ([BCG2011] Def. 10)
  (i) every in-labelled argument is legally-in;
-(ii) every out-labelled argument is legally-out. *) 
+(ii) every out-labelled argument is legally-out.\<close>
 definition admissibleLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("admissibleLab\<^sup>_")
   where \<open>admissibleLab\<^sup>\<A> \<equiv> \<lambda>att Lab. \<forall>x. \<A> x \<longrightarrow> (in Lab x \<longrightarrow> legallyIn\<^sup>\<A> att Lab x) \<and> (out Lab x \<longrightarrow> legallyOut\<^sup>\<A> att Lab x)\<close>
 
@@ -60,15 +64,15 @@ definition admissibleLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a 
 (* Complete labellings.                                    *)
 (***********************************************************)
 
-(* A complete labelling is an admissible labelling where every undec-labelled argument is
-   legally-undec ([BCG2011] Def. 10). *)
+text \<open>A complete labelling is an admissible labelling where every undec-labelled argument is
+   legally-undec ([BCG2011] Def. 10).\<close>
 definition completeLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("completeLab\<^sup>_")
   where \<open>completeLab\<^sup>\<A> \<equiv> \<lambda>att Lab. admissibleLab\<^sup>\<A> att Lab \<and> (\<forall>x. \<A> x \<longrightarrow> undec Lab x \<longrightarrow> legallyUndec\<^sup>\<A> att Lab x)\<close>
  
 
-(* Complete labelling can be alternatively characterised as the labellings in which, for each argument A 
+text \<open>Complete labelling can be alternatively characterised as the labellings in which, for each argument A 
  (i) A is labelled in iff all its attackers are labelled out; and
-(ii) A is labelled out iff it has at least one attacker that is labelled in ([BCG2011] Prop. 2). *)
+(ii) A is labelled out iff it has at least one attacker that is labelled in ([BCG2011] Prop. 2).\<close>
 definition completeLab2 :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("completeLab2\<^sup>_")
   where \<open>completeLab2\<^sup>\<A> \<equiv> \<lambda>att Lab. (\<forall>x. \<A> x \<longrightarrow> (in Lab x \<longleftrightarrow> legallyIn\<^sup>\<A> att Lab x) \<and>
                                               (out Lab x \<longleftrightarrow> legallyOut\<^sup>\<A> att Lab x))\<close>
@@ -83,8 +87,8 @@ lemma complete_defEq: \<open>completeLab\<^sup>\<A> att Lab \<longleftrightarrow
 (* Grounded labellings.                                    *)
 (***********************************************************)
 
-(* A grounded labelling is a (the) complete labelling whose in-set is minimal (least) wrt. 
-set inclusion ([BCG 2011] Def. 20). The two definitions below are shown equivalent in theory "tests". *)
+text \<open>A grounded labelling is a (the) complete labelling whose in-set is minimal (least) wrt. 
+set inclusion ([BCG 2011] Def. 20). The two definitions below are shown equivalent in theory "tests".\<close>
 definition groundedLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("groundedLab\<^sup>_")
   where \<open>groundedLab\<^sup>\<A> att Lab \<equiv> minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in\<close>
 
@@ -95,7 +99,7 @@ definition groundedLab2 :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a L
 (* Preferred labellings.                                   *)
 (***********************************************************)
 
-(* Def. 22 from [BCG 2011] *)
+text \<open>Def. 22 from [BCG 2011]\<close>
 definition preferredLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("preferredLab\<^sup>_")
   where \<open>preferredLab\<^sup>\<A> att Lab \<equiv> maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in\<close>
 
@@ -103,13 +107,13 @@ definition preferredLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a L
 (* Ideal labellings.                                       *)
 (***********************************************************)
 
-(* A quasi-ideal labelling is an admissible labelling that is
-  less or equally commited than every preferred labelling: *)
+text \<open>A quasi-ideal labelling is an admissible labelling that is
+  less or equally commited than every preferred labelling:\<close>
 definition qidealLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("qidealLab\<^sup>_")
   where \<open>qidealLab\<^sup>\<A> att Lab \<equiv> admissibleLab\<^sup>\<A> att Lab \<and> (\<forall>L. preferredLab\<^sup>\<A> att L \<longrightarrow> Lab \<sqsubseteq>\<^sup>\<A> L)\<close>  
 
-(* The ideal labelling of AF is the greatest/maximal quasi-ideal labelling
- wrt. relation \<sqsubseteq> (cf. [BCG 2011] Def. 29) *)
+text \<open>The ideal labelling of AF is the greatest/maximal quasi-ideal labelling
+ wrt. relation \<sqsubseteq> (cf. [BCG 2011] Def. 29)\<close>
 definition idealLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("idealLab\<^sup>_")
   where \<open>idealLab\<^sup>\<A> att Lab \<equiv> qidealLab\<^sup>\<A> att Lab \<and> (\<forall>L. qidealLab\<^sup>\<A> att L \<longrightarrow> L \<sqsubseteq>\<^sup>\<A> Lab)\<close>
 definition idealLab2 :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("idealLab2\<^sup>_")
@@ -119,7 +123,7 @@ definition idealLab2 :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labe
 (* Stable labellings.                                      *)
 (***********************************************************)
 
-(* Def 24 from [BCG 2011] *)
+text \<open>Def 24 from [BCG 2011]\<close>
 definition stableLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("stableLab\<^sup>_")
   where \<open>stableLab\<^sup>\<A> att Lab \<equiv> completeLab\<^sup>\<A> att Lab \<and> (\<forall>x. \<A> x \<longrightarrow> Lab(x) \<noteq> Undec)\<close>
 
@@ -127,7 +131,7 @@ definition stableLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labe
 (* Semi-stable labellings.                                 *)
 (***********************************************************)
 
-(* Def. 26 from [BCG 2011] *) 
+text \<open>Def. 26 from [BCG 2011]\<close>
 definition semistableLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("semistableLab\<^sup>_")
   where \<open>semistableLab\<^sup>\<A> att Lab \<equiv> minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec\<close>  
 
@@ -135,7 +139,7 @@ definition semistableLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a 
 (* Stage labellings.                                       *)
 (***********************************************************)
 
-(* Def. 31 from [BCG2011] *)
+text \<open>Def. 31 from [BCG2011]\<close>
 definition stageLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("stageLab\<^sup>_")
   where \<open>stageLab\<^sup>\<A> att Lab \<equiv> minimal\<^sup>\<A> (conflictfreeLab\<^sup>\<A> att) Lab undec\<close>  
 

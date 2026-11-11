@@ -2,13 +2,17 @@ theory "Zorn-lemma"
   imports misc HOL.Zorn
 begin
 
-(*Introduces technical definitions for translations between Isabelle/HOL's sets and predicates*)
+section \<open>Zorn's Lemma for Predicate-Based Sets\<close>
+
+text \<open>We transfer Zorn's lemma to predicate-based sets and derive maximality results for restricted argument domains.\<close>
+
+text \<open>Introduces technical definitions for translations between Isabelle/HOL's sets and predicates\<close>
 definition set2pred1::"'a set \<Rightarrow> 'a Set" ("\<lbrakk>_\<rbrakk>\<^sup>1") where "\<lbrakk>S\<rbrakk>\<^sup>1 \<equiv> \<lambda>x. x \<in> S"
 definition pred2set1::"'a Set \<Rightarrow> 'a set" ("\<lbrace>_\<rbrace>\<^sup>1") where "\<lbrace>P\<rbrace>\<^sup>1 \<equiv> {x. P x}"
 definition set2pred2::"'a set set \<Rightarrow> 'a Set Set" ("\<lbrakk>_\<rbrakk>\<^sup>2") where "\<lbrakk>S\<rbrakk>\<^sup>2 \<equiv> \<lambda>X. \<lbrace>X\<rbrace>\<^sup>1 \<in> S"
 definition pred2set2::"'a Set Set \<Rightarrow> 'a set set" ("\<lbrace>_\<rbrace>\<^sup>2") where "\<lbrace>P\<rbrace>\<^sup>2 \<equiv> {X. P \<lbrakk>X\<rbrakk>\<^sup>1}"
 
-(*Proves useful translation lemmas between Isabelle/HOL's sets and predicates*)
+text \<open>Proves useful translation lemmas between Isabelle/HOL's sets and predicates\<close>
 lemma trans1a: "A = \<lbrakk>\<lbrace>A\<rbrace>\<^sup>1\<rbrakk>\<^sup>1" unfolding set2pred1_def pred2set1_def by simp
 lemma trans1b: "A = \<lbrace>\<lbrakk>A\<rbrakk>\<^sup>1\<rbrace>\<^sup>1" unfolding set2pred1_def pred2set1_def by simp
 lemma trans2a: "A = \<lbrakk>\<lbrace>A\<rbrace>\<^sup>2\<rbrakk>\<^sup>2" unfolding set2pred2_def pred2set2_def using trans1a by (metis mem_Collect_eq)
@@ -18,7 +22,7 @@ lemma trans2b: "A = \<lbrace>\<lbrakk>A\<rbrakk>\<^sup>2\<rbrace>\<^sup>2" unfol
 definition chains :: "'a Set Set \<Rightarrow> 'a Set Set Set"
   where "chains A \<equiv> \<lambda>C. C \<subseteq> A \<and> chain C"
 
-(*Proves useful translation lemmas between Isabelle/HOL's sets and predicates*)
+text \<open>Proves useful translation lemmas between Isabelle/HOL's sets and predicates.\<close>
 lemma chainEq: "chain A \<longleftrightarrow> chain\<^sub>\<subseteq> \<lbrace>A\<rbrace>\<^sup>2" unfolding chain_subset_def chain_def
   by (smt (verit, ccfv_SIG) Collect_mono_iff pred2set1_def pred2set2_def set2pred1_def subsetI trans1a)
 lemma chainsEq: "(X::'a set set) \<in> Zorn.chains \<lbrace>A\<rbrace>\<^sup>2 \<longleftrightarrow> chains (A::'a Set Set) \<lbrakk>X\<rbrakk>\<^sup>2" 

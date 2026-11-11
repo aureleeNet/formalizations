@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Abstract Argumentation}
+\author{Alexander Steen and David Fuenmayor}
+\maketitle
+
+\begin{abstract}
+  We present an encoding of abstract argumentation frameworks in
+  classical higher-order logic. This provides a uniform framework for
+computer-assisted assessment of abstract argumentation frameworks using interactive
+and automated reasoning tools. It enables the formal analysis and verification
+of meta-theoretical properties as well as the flexible generation of extensions and
+labellings with respect to well-known argumentation semantics. This Isabelle/HOL
+formalization extends and improves previous published work~\cite{steen2024formalization}.
+The definitions and properties are taken
+from~\cite{DBLP:journals/ai/Dung95} and~\cite{DBLP:journals/ker/BaroniCG11}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

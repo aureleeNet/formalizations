@@ -2,6 +2,10 @@ theory "lab-simpl-properties"
   imports "labellings-simpl" "correspondence-simpl" "ext-simpl-properties"
 begin
 
+section \<open>Properties of Labelling Semantics over the Full Universe\<close>
+
+text \<open>We prove structural, existence, and uniqueness results for labelling semantics over the full argument universe.\<close>
+
 lemma DungFundLemma1Lab: "admissibleLab AF Lab \<Longrightarrow> \<forall>a. defends AF (Lab2Ext Lab) a \<longrightarrow> 
      admissibleLab AF (\<lambda>x. if (x = a) then In else (if (AF x a) then Out else Lab(x) ))"
   unfolding defends_def admissibleLab_def Lab2Ext_def  

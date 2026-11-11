@@ -8,6 +8,10 @@ theory "lab-relationships"
   imports "labellings"  "lab-properties"
 begin
 
+section \<open>Inclusions between Labelling Semantics\<close>
+
+text \<open>We establish inclusion relationships between the standard labelling semantics.\<close>
+
 
 (************************************************************************)
 (* Inclusion relations as summary: Figure 12 of [BCG2011]
