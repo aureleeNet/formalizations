@@ -28,10 +28,10 @@ no_notation
   union (infixl "\<union>" 65) and
   inter (infixl "\<inter>" 70)
 
-test \<open>Sets and relations are vanilla type-polymorphic predicates.
+text \<open>Sets and relations are vanilla type-polymorphic predicates.
    'a is a type variable representing an arbitrary type.
    Both notions are repreesnted by their respective characteristic
-   functions.\<close
+   functions.\<close>
 (*sets as functions into a 2-element codomain *)
 type_synonym 'a Set = \<open>'a \<Rightarrow> bool\<close> 
 (*relations as curried 2-ary functions into a 2-element codomain *)
@@ -204,7 +204,7 @@ definition omegacomplete_rel ("\<omega>-cpo\<^sup>_ _")    where "\<omega>-cpo\<
 definition directedcomplete ("dcpo _") where "dcpo A \<equiv> \<forall>D. D \<subseteq> A \<and> directed D \<longrightarrow> A(\<^bold>\<Or>D)"
 definition directedcomplete_rel ("dcpo\<^sup>_ _") where "dcpo\<^sup>U A \<equiv> \<forall>D. D \<subseteq> A \<and> directed\<^sup>U D \<longrightarrow> A(\<^bold>\<Or>D \<inter> U)"
 
-text \<open>Clearly, dcpos are also \<omega>-cpos (but not viceversa).\<close>
+text \<open>Clearly, dcpos are also @{text "\<omega>"}-cpos (but not vice versa).\<close>
 lemma dcpo_\<omega>: "dcpo A \<longrightarrow> \<omega>-cpo A" by (simp add: chainDirected directedcomplete_def omegacomplete_def)
 lemma dcpo_\<omega>_rel: "dcpo\<^sup>U A \<longrightarrow> \<omega>-cpo\<^sup>U A" by (simp add: chainDirected_rel directedcomplete_rel_def omegacomplete_rel_def)
 lemma "\<omega>-cpo A \<longrightarrow> dcpo A" (*nitpick*) oops (* counterexamples are infinite*)

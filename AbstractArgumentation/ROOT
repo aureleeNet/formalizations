@@ -4,14 +4,16 @@ session "Abstract-Argumentation" = HOL +
   options [timeout = 300]
   directories simplified
   theories
-    adequacy
-    correspondence
+    misc
+    base
+    extensions
+    "ext-properties"
+    labellings
+    "lab-properties"
     "ext-relationships"
     "lab-relationships"
-    "lab-simpl-properties"
-    "lab-simpl-relationships"
-    "ext-simpl-relationships"
-    "model-generation"
+    correspondence
+    adequacy
   document_files
     "root.bib"
     "root.tex"

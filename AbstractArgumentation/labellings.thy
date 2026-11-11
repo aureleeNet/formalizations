@@ -113,7 +113,7 @@ definition qidealLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labe
   where \<open>qidealLab\<^sup>\<A> att Lab \<equiv> admissibleLab\<^sup>\<A> att Lab \<and> (\<forall>L. preferredLab\<^sup>\<A> att L \<longrightarrow> Lab \<sqsubseteq>\<^sup>\<A> L)\<close>  
 
 text \<open>The ideal labelling of AF is the greatest/maximal quasi-ideal labelling
- wrt. relation \<sqsubseteq> (cf. [BCG 2011] Def. 29)\<close>
+ wrt. relation @{text "\<sqsubseteq>"} (cf. [BCG 2011] Def. 29)\<close>
 definition idealLab :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("idealLab\<^sup>_")
   where \<open>idealLab\<^sup>\<A> att Lab \<equiv> qidealLab\<^sup>\<A> att Lab \<and> (\<forall>L. qidealLab\<^sup>\<A> att L \<longrightarrow> L \<sqsubseteq>\<^sup>\<A> Lab)\<close>
 definition idealLab2 :: \<open>'a Set \<Rightarrow> 'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("idealLab2\<^sup>_")

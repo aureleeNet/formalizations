@@ -18,11 +18,11 @@ text \<open>We define attack and defence, characteristic functions, argument lab
 named_theorems Defs
 
 text \<open>An abstract argumentation framework AF is characterized by its 
-   set of arguments \<A> of type 'a Set (the arguments being of arbitrary type 'a)
+   set of arguments @{text "\<A>"} of type 'a Set (the arguments being of arbitrary type 'a)
    and the attack relation (usually referred to as 'att' or ... ) of type 'a Rel.
-   The is usually bundled within a pair (\<A>, att) in literature. For simplicity
-   (and technical reasons) we pass to each concept \<A> and att individually,
-   instead of the pair AF = (\<A>, att). Any 2-ary function can be regarded
+   The is usually bundled within a pair (@{text "\<A>"}, att) in literature. For simplicity
+   (and technical reasons) we pass to each concept @{text "\<A>"} and att individually,
+   instead of the pair AF = (@{text "\<A>"}, att). Any 2-ary function can be regarded
    a nested unary function in terms of Currying.\<close>
 
 (***********************************************************)
@@ -89,7 +89,7 @@ subsection \<open>Notions primarily related to Labelling based semantics.\<close
 (***********************************************************)
 (***********************************************************)
 
-text text \<open>Generalising sets as "labellings", i.e. functions into some finite codomain (of "labels").\<close>
+text \<open>Generalising sets as "labellings", i.e. functions into some finite codomain (of "labels").\<close>
 datatype Label = In | Out | Undec (*introduces a 3-element set of labels*)
 type_synonym 'a Labelling = \<open>'a \<Rightarrow> Label\<close> (*labellings as functions into "labels" *)
 
@@ -108,7 +108,7 @@ lemma OutUndecEquivLab: "(out(L1) \<approx> out(L2)) \<and> (undec(L1) \<approx>
 
 lemma equivLabId: "L1 \<cong> L2 \<longleftrightarrow> L1 = L2" using Label.exhaust ext by (metis (full_types) equivalentLab_def inset_def outset_def)
 
-text \<open>We provide a relativized definition too (wrt. an universe set of arguments \<A>).\<close>
+text \<open>We provide a relativized definition too (wrt. an universe set of arguments @{text "\<A>"}).\<close>
 definition equivalentLab_rel :: \<open>'a Labelling \<Rightarrow> 'a Set \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close> ("_\<cong>\<^sup>__") 
   where "L1 \<cong>\<^sup>\<A> L2 \<equiv> (in(L1) \<approx>\<^sup>\<A> in(L2)) \<and> (out(L1) \<approx>\<^sup>\<A> out(L2))"
 

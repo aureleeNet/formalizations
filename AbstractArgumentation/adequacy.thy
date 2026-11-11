@@ -27,7 +27,7 @@ text \<open>Lemma 4.4:  the characteristic function preserves conflict-freeness.
 lemma cf_preserveChar: \<open>conflictfreeExt\<^sup>\<A> att S \<Longrightarrow> conflictfreeExt\<^sup>\<A> att (\<F>\<^sup>\<A> att S)\<close>
   by (smt (verit) conflictfreeExt_def defends_rel_def)
 
-text \<open>Lemma 4.5: A conflict-free set S is admissible iff it is a subset of \<F>(S).
+text \<open>Lemma 4.5: A conflict-free set S is admissible iff it is a subset of @{text "\<F>"}(S).
    [Dung, Lemma 18]\<close>
 lemma cf_admissibleChar: \<open>conflictfreeExt\<^sup>\<A> att S \<Longrightarrow> admissibleExt\<^sup>\<A> att S \<longleftrightarrow> S \<subseteq>\<^sup>\<A> \<F>\<^sup>\<A> att S\<close> 
   by (simp add: admissibleExt_def)
@@ -40,7 +40,7 @@ lemma dung_fundlemma_1: \<open>(admissibleExt\<^sup>\<A> att S) \<and> (defends\
 lemma dung_fundlemma_2: \<open>(admissibleExt\<^sup>\<A> att S) \<and> (defends\<^sup>\<A> att S a) \<and> (defends\<^sup>\<A> att S a') \<Longrightarrow> defends\<^sup>\<A> att (S \<union> \<lbrace>a\<rbrace>) a'\<close> 
   by (metis (full_types, lifting) MONO_def \<F>_mono')
 
-text \<open>Lemma 4.7: Admissible sets form a \<omega>-complete CPO wrt. set-inclusion 
+text \<open>Lemma 4.7: Admissible sets form a @{text "\<omega>"}-complete CPO wrt. set-inclusion
    [Dung, Theorem 11, Part (1)]\<close>
 (* We can, in fact, prove a stronger statement: admissible extensions form a dcpo*)
 lemma admissibleDirectedComplete: "dcpo\<^sup>\<A> (admissibleExt\<^sup>\<A> AF)" 
@@ -54,7 +54,7 @@ lemma DungTh11: "admissibleExt\<^sup>\<A> att S \<longrightarrow> (\<exists>E. S
   using ZornLemma2_\<omega>_rel admissibleOmegaComplete  
   by (metis preferredExt2_def preferredExt_defEq)
 
-text \<open>Lemma 4.9: Conflict-free sets are complete iff they are fixed-points of \<F>.\<close>
+text \<open>Lemma 4.9: Conflict-free sets are complete iff they are fixed-points of @{text "\<F>"}.\<close>
 lemma complete_fix: \<open>conflictfreeExt\<^sup>\<A> att S \<Longrightarrow> completeExt\<^sup>\<A> att S \<longleftrightarrow> S \<approx>\<^sup>\<A> \<F>\<^sup>\<A> att S\<close> 
   by (metis admissibleExt_def completeExt_def)
 

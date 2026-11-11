@@ -58,7 +58,7 @@ qed
 text \<open>Emptyset is admissible.\<close>
 lemma emptyAdmissible: \<open>admissibleExt\<^sup>\<A> att \<lbrace>-\<rbrace>\<close> by (simp add: admissibleExt_def conflictfreeExt_def)
 
-text \<open>every complete extension is admissible but not the other way round.\<close
+text \<open>every complete extension is admissible but not the other way round.\<close>
 lemma completeAdmissible: \<open>completeExt\<^sup>\<A> att S \<longrightarrow> admissibleExt\<^sup>\<A> att S\<close> by (simp add: completeExt_def)
 lemma \<open>admissibleExt\<^sup>\<A> att S \<Longrightarrow> completeExt\<^sup>\<A> att S\<close> nitpick oops
 
@@ -78,13 +78,13 @@ text \<open>The following lemma is also quite similar in spirit and might be use
 lemma aux: "admissibleExt\<^sup>\<A> att S \<Longrightarrow> admissibleExt\<^sup>\<A> att  (S \<union> (\<F>\<^sup>\<A> att S))" 
   by (smt (z3) admissibleExt_def conflictfreeExt_def defends_rel_def)
 
-text \<open>[Dung 1995] Theorem 11: (1) Admissible sets form an \<omega>-complete poset.
+text \<open>[Dung 1995] Theorem 11: (1) Admissible sets form an @{text "\<omega>"}-complete poset.
             We can, in fact, prove a stronger statement: admissible extensions form a dcpo.\<close>
 lemma admissibleDirectedComplete: "dcpo\<^sup>\<A> (admissibleExt\<^sup>\<A> att)" 
   unfolding admissibleExt_def conflictfreeExt_def defends_rel_def directedcomplete_rel_def directed_rel_def supremum_def by meson
 lemma admissibleOmegaComplete: "\<omega>-cpo\<^sup>\<A> (admissibleExt\<^sup>\<A> att)" by (simp add: admissibleDirectedComplete dcpo_\<omega>_rel)
 
-text \<open>(2) For each admissible set S there exists a preferred extension E, such that S \<subseteq> E.\<close>
+text \<open>(2) For each admissible set S there exists a preferred extension E, such that S @{text "\<subseteq>"} E.\<close>
 lemma DungTh11: "admissibleExt\<^sup>\<A> att S \<longrightarrow> (\<exists>E. S \<subseteq>\<^sup>\<A> E \<and> maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) E id)" 
   by (metis ZornLemma2_\<omega>_rel admissibleOmegaComplete)
 lemma \<open>(\<exists>S. maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id) \<longrightarrow> (\<exists>S. maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id)\<close>
@@ -115,10 +115,48 @@ subsection \<open>Grounded extensions\<close>
 
 (* The first two definitions of grounded extensions are shown equivalent 
 (since \<F> has a least fixed point by the Knaster-Tarski theorem) *)
-lemma groundedExt_defEq1: "groundedExt\<^sup>\<A> att S \<longleftrightarrow> groundedExt2\<^sup>\<A> att S" 
-  unfolding groundedExt_def groundedExt2_def using \<F>_leastFP_ex by (smt (z3) completeExt2_def completeExt_defEq conflictfreeExt_def id_def least_rel_def minimal_rel_def)
+lemma groundedExt_defEq1: "groundedExt\<^sup>\<A> att S \<longleftrightarrow> groundedExt2\<^sup>\<A> att S"
+proof
+  assume grounded: "groundedExt\<^sup>\<A> att S"
+  have minimal_S: "minimal\<^sup>\<A> (completeExt\<^sup>\<A> att) S id"
+    using grounded unfolding groundedExt_def .
+  have complete_S: "completeExt\<^sup>\<A> att S"
+    by (rule conjunct1[OF minimal_S[unfolded minimal_rel_def]])
+  obtain L where least_L: "least\<^sup>\<A> (fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att)) L id"
+    using \<F>_leastFP_ex by blast
+  have fixed_L: "fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) L"
+    by (rule conjunct1[OF least_L[unfolded least_rel_def]])
+  have bounds: "\<forall>X. fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) X \<longrightarrow> L \<subseteq>\<^sup>\<A> X"
+    by (rule conjunct2[OF least_L[unfolded least_rel_def id_apply]])
+  have fixed_S: "fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) S"
+    using complete_S unfolding completeExt_defEq completeExt2_def by blast
+  have sub: "L \<subseteq>\<^sup>\<A> S"
+    using bounds[THEN spec, of S] fixed_S by blast
+  have cf_S: "conflictfreeExt\<^sup>\<A> att S"
+    using complete_S unfolding completeExt_defEq completeExt2_def by blast
+  have cf_L: "conflictfreeExt\<^sup>\<A> att L"
+    using cf_S sub unfolding conflictfreeExt_def by blast
+  have complete_L: "completeExt\<^sup>\<A> att L"
+    using cf_L fixed_L unfolding completeExt_defEq completeExt2_def by blast
+  have equal: "L \<approx>\<^sup>\<A> S"
+    using minimal_S complete_L sub unfolding minimal_rel_def id_apply by blast
+  have below: "S \<subseteq>\<^sup>\<A> X" if complete_X: "completeExt\<^sup>\<A> att X" for X
+  proof -
+    have fixed_X: "fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) X"
+      using complete_X unfolding completeExt_defEq completeExt2_def by blast
+    have "L \<subseteq>\<^sup>\<A> X" using bounds[THEN spec, of X] fixed_X by blast
+    thus ?thesis using equal by blast
+  qed
+  show "groundedExt2\<^sup>\<A> att S"
+    using complete_S below unfolding groundedExt2_def least_rel_def id_apply by blast
+next
+  assume grounded: "groundedExt2\<^sup>\<A> att S"
+  show "groundedExt\<^sup>\<A> att S"
+    unfolding groundedExt_def
+    by (rule leastMin_rel[THEN mp, OF grounded[unfolded groundedExt2_def]])
+qed
 
-text \<open>A key lemma says that minimal/least fixed points of \<F> are conflict-free.\<close>
+text \<open>A key lemma says that minimal/least fixed points of @{text "\<F>"} are conflict-free.\<close>
 lemma groundedConflictFree: "least\<^sup>\<A> (fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att)) S id \<longrightarrow> conflictfreeExt\<^sup>\<A> att S" 
   by (smt (verit, ccfv_threshold) completeExt2_def completeExt_defEq conflictfreeExt_def id_apply least_rel_def maxAdmissibleComplete maximal_rel_def preferredExist)
 
