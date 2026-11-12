@@ -4,7 +4,8 @@ begin
 
 section \<open>Extension and Labelling Correspondence over the Full Universe\<close>
 
-text \<open>We define translations and prove correspondence between extension and labelling semantics over the full argument universe.\<close>
+text \<open>We define translations and prove correspondence between extension and labelling semantics over
+the full argument universe.\<close>
 
 (**********************************************************)
 (**** Correspondences between labellings and extensions ***)

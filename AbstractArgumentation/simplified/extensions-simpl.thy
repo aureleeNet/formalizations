@@ -1,8 +1,8 @@
 (* D. Fuenmayor and A. Steen, August 2021 *)
 (* This file contains extension-based semantics for argumentation frameworks. *)
-(* Auxiliary references: 
+(* Auxiliary references:
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
-            Knowledge Engineering Review (2011) 
+            Knowledge Engineering Review (2011)
  [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
             logic programming and n-person games, Artificial Intelligence. (1995)
 *)
@@ -12,13 +12,14 @@ begin
 
 section \<open>Extension Semantics over the Full Argument Universe\<close>
 
-text \<open>We define the standard extension semantics with every element of the argument type included in the framework.\<close>
+text \<open>We define the standard extension semantics with every element of the argument type included in
+the framework.\<close>
 
 (***********************************************************)
 (* Conflict-free extensions.                               *)
 (***********************************************************)
 
-(* A set S of arguments is said to be conflict-free if there are no arguments A and B in S 
+(* A set S of arguments is said to be conflict-free if there are no arguments A and B in S
   such that A attacks B ([Dung 1995] Def. 5 and [BCG 2011] Def. 12). *)
 definition conflictfreeExt :: \<open>'a Rel \<Rightarrow> 'a Set \<Rightarrow> bool\<close>
   where \<open>conflictfreeExt \<equiv> \<lambda>AF S. \<forall>a b. (S a \<and> S b) \<longrightarrow> \<not>(AF a b)\<close>
@@ -83,7 +84,7 @@ definition preferredExt2 :: \<open>'a Rel \<Rightarrow> 'a Set \<Rightarrow> boo
 definition idealSet :: \<open>'a Rel \<Rightarrow> 'a Set \<Rightarrow> bool\<close>
   where \<open>idealSet \<equiv> \<lambda>AF S. admissibleExt AF S \<and> (\<forall>E. preferredExt AF E \<longrightarrow> S \<subseteq> E)\<close>
 
-(* An ideal extension of an argumentation framework AF is the (unique) 
+(* An ideal extension of an argumentation framework AF is the (unique)
   maximal (i.e greatest) ideal set. ([BCG 2011] Def. 30 and paragraph below). *)
 definition idealExt :: \<open>'a Rel \<Rightarrow> 'a Set \<Rightarrow> bool\<close>
   where \<open>idealExt \<equiv> \<lambda>AF S. greatest (idealSet AF) S id\<close>
@@ -94,7 +95,7 @@ definition idealExt2 :: \<open>'a Rel \<Rightarrow> 'a Set \<Rightarrow> bool\<c
 (* Stable extensions.                                      *)
 (***********************************************************)
 
-(* We define the range of a set of arguments S as the union of S with the set 
+(* We define the range of a set of arguments S as the union of S with the set
   of its attacked arguments. *)
 definition range :: \<open>'a Rel \<Rightarrow> 'a Set \<Rightarrow> 'a Set\<close>
   where \<open>range AF \<equiv> \<lambda>S. S \<union> [AF|S]\<^sup>+\<close>

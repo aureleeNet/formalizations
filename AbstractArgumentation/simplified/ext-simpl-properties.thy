@@ -4,7 +4,8 @@ begin
 
 section \<open>Properties of Extension Semantics over the Full Universe\<close>
 
-text \<open>We prove structural and existence results for extension semantics without an explicit argument-domain restriction.\<close>
+text \<open>We prove structural and existence results for extension semantics without an explicit
+argument-domain restriction.\<close>
 
 subsection \<open>Admissible and complete extensions\<close>
 
@@ -75,12 +76,12 @@ lemma preferredConflictfree: "A \<subseteq> B \<Longrightarrow> preferredExt AF 
 
 subsection \<open>Grounded extensions\<close>
 
-(* The first two definitions of grounded extensions are shown equivalent 
+(* The first two definitions of grounded extensions are shown equivalent
 (since \<F> has a least fixed point by the Knaster-Tarski theorem) *)
 lemma groundedExt_defEq1: "groundedExt AF S = groundedExt2 AF S" 
   unfolding groundedExt_def groundedExt2_def using \<F>_leastFP_ex by (smt (z3) completeExt2_def completeExt_defEq conflictfreeExt_def id_def least_def minimal_def)
 
-(* A key lemma says that minimal/least fixed points of \<F> are conflict-free. This is not at all trivial! 
+(* A key lemma says that minimal/least fixed points of \<F> are conflict-free. This is not at all trivial!
  Quite interestingly, SMT solver can prove this by somehow using the existence of preferred extensions.*)
 lemma groundedConflictFree: "least (fixpoint (\<F> AF)) S id \<longrightarrow> conflictfreeExt AF S" 
   by (smt (verit, ccfv_threshold) completeExt2_def completeExt_defEq conflictfreeExt_def id_apply least_def maxAdmissibleComplete maximal_def preferredExist)
@@ -149,7 +150,7 @@ subsection \<open>Stable extensions\<close>
 lemma stableExt_defEq: "stableExt AF S = stableExt2 AF S" 
   by (metis (mono_tags, lifting) range_def conflictfreeExt_def plusset_def stableExt2_def stableExt_def)
 
-subsection \<open>Semistable extensions\<close>
+subsection \<open>Semi-stable extensions\<close>
 (*TODO*)
 
 subsection \<open>Stage extensions\<close>

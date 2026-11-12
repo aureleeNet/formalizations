@@ -1,9 +1,9 @@
 (* D. Fuenmayor and A. Steen, August 2021 *)
 (* This file contains experiments with and verification of properties of extension-based semantics
    for argumentation frameworks. *)
-(* Auxiliary references: 
+(* Auxiliary references:
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
-            Knowledge Engineering Review (2011) 
+            Knowledge Engineering Review (2011)
  [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
             logic programming and n-person games, Artificial Intelligence. (1995)
 *)
@@ -13,7 +13,8 @@ begin
 
 section \<open>Properties of Extension Semantics\<close>
 
-text \<open>We prove structural properties of extension semantics and investigate their limits through counterexamples.\<close>
+text \<open>We prove structural properties of extension semantics and investigate their limits through
+counterexamples.\<close>
 
 
 subsection \<open>Admissible and complete extensions\<close>
@@ -55,10 +56,10 @@ proof -
   thus ?thesis unfolding conflictfreeExt_def by blast
 qed
 
-text \<open>Emptyset is admissible.\<close>
+text \<open>The empty set is admissible.\<close>
 lemma emptyAdmissible: \<open>admissibleExt\<^sup>\<A> att \<lbrace>-\<rbrace>\<close> by (simp add: admissibleExt_def conflictfreeExt_def)
 
-text \<open>every complete extension is admissible but not the other way round.\<close>
+text \<open>Every complete extension is admissible, but the converse does not hold.\<close>
 lemma completeAdmissible: \<open>completeExt\<^sup>\<A> att S \<longrightarrow> admissibleExt\<^sup>\<A> att S\<close> by (simp add: completeExt_def)
 lemma \<open>admissibleExt\<^sup>\<A> att S \<Longrightarrow> completeExt\<^sup>\<A> att S\<close> nitpick oops
 
@@ -68,52 +69,53 @@ lemma completeExt_defEq: "completeExt\<^sup>\<A> att S \<longleftrightarrow> com
 
 subsection \<open>Preferred extensions\<close>
 
-text \<open>Dung's "Fundamental lemma" ([Dung 1995] Lemma 10).\<close>
+text \<open>Dung's fundamental lemma [Dung 1995, Lemma 10].\<close>
 lemma DungFundLemma1: "admissibleExt\<^sup>\<A> att S \<Longrightarrow> \<forall>a. defends\<^sup>\<A> att S a \<longrightarrow> admissibleExt\<^sup>\<A> att  (S \<union> \<lbrace>a\<rbrace>)"
   by (smt (z3) admissibleExt_def conflictfreeExt_def defends_rel_def)
 lemma DungFundLemma2: "admissibleExt\<^sup>\<A> att S \<Longrightarrow> \<forall>a b. defends\<^sup>\<A> att S a \<and> defends\<^sup>\<A> att S b \<longrightarrow> defends\<^sup>\<A> att (S \<union> \<lbrace>a\<rbrace>) b"
   by (smt (verit) defends_rel_def)
 
-text \<open>The following lemma is also quite similar in spirit and might be useful to prove subsequent results.\<close>
+text \<open>The following related lemma is useful for subsequent proofs.\<close>
 lemma aux: "admissibleExt\<^sup>\<A> att S \<Longrightarrow> admissibleExt\<^sup>\<A> att  (S \<union> (\<F>\<^sup>\<A> att S))" 
   by (smt (z3) admissibleExt_def conflictfreeExt_def defends_rel_def)
 
-text \<open>[Dung 1995] Theorem 11: (1) Admissible sets form an @{text "\<omega>"}-complete poset.
-            We can, in fact, prove a stronger statement: admissible extensions form a dcpo.\<close>
+text \<open>Dung's Theorem 11(1) states that admissible sets form an @{text "\<omega>"}-complete partial
+order [Dung 1995]. We prove the stronger result that admissible extensions form a dcpo.\<close>
 lemma admissibleDirectedComplete: "dcpo\<^sup>\<A> (admissibleExt\<^sup>\<A> att)" 
   unfolding admissibleExt_def conflictfreeExt_def defends_rel_def directedcomplete_rel_def directed_rel_def supremum_def by meson
 lemma admissibleOmegaComplete: "\<omega>-cpo\<^sup>\<A> (admissibleExt\<^sup>\<A> att)" by (simp add: admissibleDirectedComplete dcpo_\<omega>_rel)
 
-text \<open>(2) For each admissible set S there exists a preferred extension E, such that S @{text "\<subseteq>"} E.\<close>
+text \<open>Dung's Theorem 11(2) states that every admissible set S is contained in a preferred extension
+E, so S @{text "\<subseteq>"} E.\<close>
 lemma DungTh11: "admissibleExt\<^sup>\<A> att S \<longrightarrow> (\<exists>E. S \<subseteq>\<^sup>\<A> E \<and> maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) E id)" 
   by (metis ZornLemma2_\<omega>_rel admissibleOmegaComplete)
 lemma \<open>(\<exists>S. maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id) \<longrightarrow> (\<exists>S. maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id)\<close>
   by (metis ZornLemma2_\<omega>_rel admissibleOmegaComplete)
 
-text \<open>We can also prove that maximal admissible sets always exist.\<close>
+text \<open>Maximal admissible sets always exist.\<close>
 lemma preferredExist: "\<exists>S. maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id" 
   by (simp add: ZornLemma_\<omega>_rel admissibleOmegaComplete)
 
-text \<open>We can verify that maximally admissible extensions are maximally complete extensions.\<close>
+text \<open>Maximal admissible extensions are maximal complete extensions.\<close>
 lemma maxAdmissibleComplete: "maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id \<longrightarrow> maximal\<^sup>\<A> (completeExt\<^sup>\<A> att) S id"
   unfolding maximal_rel_def completeExt_def admissibleExt_def by (smt (z3) conflictfreeExt_def defends_rel_def id_apply)
 
-text \<open>The converse direction can proven by making use of the previous results.\<close>
+text \<open>The previous results also establish the converse.\<close>
 lemma maxCompleteAdmissible: "maximal\<^sup>\<A> (completeExt\<^sup>\<A> att) S id \<longrightarrow> maximal\<^sup>\<A> (admissibleExt\<^sup>\<A> att) S id"
   by (smt (verit) DungTh11 completeAdmissible id_def maxAdmissibleComplete maximal_rel_def)
 
-text \<open>Finally, we can show that both definitions for preferred extensions coincide.\<close>
+text \<open>The two definitions of preferred extensions therefore coincide.\<close>
 lemma preferredExt_defEq: "preferredExt\<^sup>\<A> att S \<longleftrightarrow> preferredExt2\<^sup>\<A> att S"
   unfolding preferredExt2_def preferredExt_def using maxAdmissibleComplete maxCompleteAdmissible by blast
 
-text \<open>Useful lemma: subsets of preferred extensions are conflict-free.\<close>
+text \<open>Subsets of preferred extensions are conflict-free.\<close>
 lemma preferredConflictfree: "A \<subseteq>\<^sup>\<A> B \<Longrightarrow> preferredExt\<^sup>\<A> att B \<Longrightarrow> conflictfreeExt\<^sup>\<A> att A"
   by (smt (verit, best) completeExt2_def completeExt_defEq conflictfreeExt_def maximal_rel_def preferredExt_def)
 
 
 subsection \<open>Grounded extensions\<close>
 
-(* The first two definitions of grounded extensions are shown equivalent 
+(* The first two definitions of grounded extensions are shown equivalent
 (since \<F> has a least fixed point by the Knaster-Tarski theorem) *)
 lemma groundedExt_defEq1: "groundedExt\<^sup>\<A> att S \<longleftrightarrow> groundedExt2\<^sup>\<A> att S"
 proof
@@ -156,11 +158,11 @@ next
     by (rule leastMin_rel[THEN mp, OF grounded[unfolded groundedExt2_def]])
 qed
 
-text \<open>A key lemma says that minimal/least fixed points of @{text "\<F>"} are conflict-free.\<close>
+text \<open>A key lemma establishes that least fixed points of @{text "\<F>"} are conflict-free.\<close>
 lemma groundedConflictFree: "least\<^sup>\<A> (fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att)) S id \<longrightarrow> conflictfreeExt\<^sup>\<A> att S" 
   by (smt (verit, ccfv_threshold) completeExt2_def completeExt_defEq conflictfreeExt_def id_apply least_rel_def maxAdmissibleComplete maximal_rel_def preferredExist)
 
-text \<open>We can show automatically that Dung's definition is equivalent to the other ones.\<close>
+text \<open>Dung's definition is equivalent to the other definitions of grounded extensions.\<close>
 lemma groundedExt_defEq2: "groundedExt2\<^sup>\<A> att S \<longleftrightarrow> groundedExt3\<^sup>\<A> att S"
   by (smt (verit, best) \<F>_mono completeExt2_def completeExt_defEq groundedConflictFree groundedExt2_def groundedExt3_def least_rel_def wKTl_relw)
 
@@ -169,7 +171,7 @@ subsection \<open>Stable extensions\<close>
 lemma stableExt_defEq: "stableExt\<^sup>\<A> att S \<longleftrightarrow> stableExt2\<^sup>\<A> att S"
   by (smt (verit) range_def conflictfreeExt_def plusset_rel_def stableExt2_def stableExt_def)
 
-text \<open>Prop. 11 from [BCG11].\<close>
+text \<open>Proposition 11 from [BCG 2011].\<close>
 lemma bcgProp11_1: \<open>conflictfreeExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A> \<Longrightarrow> admissibleExt\<^sup>\<A> att S \<and> (S \<union> [\<A>|att|S]\<^sup>+) \<approx>\<^sup>\<A> \<A>\<close>
   by (smt (verit) admissibleExt_def conflictfreeExt_def defends_rel_defEq minusset_rel_def)
 
@@ -228,7 +230,7 @@ qed
 
 subsection \<open>Stage extensions\<close>
 
-text \<open>Theorem 4 of BCG\<close>
+text \<open>Theorem 4 from [BCG 2011].\<close>
 lemma \<open>\<exists>Lab. stableExt\<^sup>\<A> att Lab \<Longrightarrow> \<forall>L. (stageExt\<^sup>\<A> att L \<longrightarrow> stableExt\<^sup>\<A> att L)\<close> 
 proof -
   assume "\<exists>S. stableExt\<^sup>\<A> att S"

@@ -1,8 +1,8 @@
 (* D. Fuenmayor and A. Steen, August 2021 *)
 (* This file contains labelling-based semantics for argumentation frameworks. *)
-(* Auxiliary references: 
+(* Auxiliary references:
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
-            Knowledge Engineering Review (2011) 
+            Knowledge Engineering Review (2011)
 *)
 theory "labellings-simpl"
   imports "../base"
@@ -10,10 +10,11 @@ begin
 
 section \<open>Labelling Semantics over the Full Argument Universe\<close>
 
-text \<open>We define legal labels and the standard labelling semantics without an explicit argument-domain restriction.\<close>
+text \<open>We define legal labels and the standard labelling semantics without an explicit
+argument-domain restriction.\<close>
 
 (* The definitions below draw from [BCG 2011] but are stated for any arbitrarily labelled argument.
-They are required to state the different definions for labellings semantics.*)
+They are required to state the different definitions for labellings semantics.*)
 
 (* An argument is termed legally-in if all of its attackers are labelled out ([BCG 2011] Def. 9). *)
 definition legallyIn :: \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> 'a \<Rightarrow> bool\<close>
@@ -57,7 +58,7 @@ definition admissibleLab :: \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarro
 definition completeLab :: \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
   where \<open>completeLab \<equiv> \<lambda>AF Lab. admissibleLab AF Lab \<and> (\<forall>x. undec Lab x \<longrightarrow> legallyUndec AF Lab x)\<close>
 
-(* Complete labelling can be alternatively characterised as the labellings in which, for each argument A 
+(* Complete labelling can be alternatively characterised as the labellings in which, for each argument A
  (i) A is labelled in iff all its attackers are labelled out; and
 (ii) A is labelled out iff it has at least one attacker that is labelled in ([BCG2011] Prop. 2). *)
 definition completeLab2 :: \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
@@ -103,7 +104,7 @@ lemma committedTrans: "L1 \<sqsubseteq> L2 \<and> L2 \<sqsubseteq> L3 \<longrigh
 lemma committedAntisymm: "L1 \<sqsubseteq> L2 \<and> L2 \<sqsubseteq> L1 \<longleftrightarrow> L1 \<cong> L2" by (meson equivalentLab_def lessOrEquallyCommittedLab_def)
 
 (* A quasi-ideal labelling is an admissible labelling that is
-  less or equally commited than every preferred labelling: *)
+  less or equally committed than every preferred labelling: *)
 definition qidealLab :: \<open>'a Rel \<Rightarrow> 'a Labelling \<Rightarrow> bool\<close>
   where \<open>qidealLab AF Lab \<equiv> admissibleLab AF Lab \<and> (\<forall>L. preferredLab AF L \<longrightarrow> Lab \<sqsubseteq> L)\<close>  
 

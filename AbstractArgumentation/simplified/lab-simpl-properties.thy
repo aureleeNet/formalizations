@@ -4,7 +4,8 @@ begin
 
 section \<open>Properties of Labelling Semantics over the Full Universe\<close>
 
-text \<open>We prove structural, existence, and uniqueness results for labelling semantics over the full argument universe.\<close>
+text \<open>We prove structural, existence, and uniqueness results for labelling semantics over the full
+argument universe.\<close>
 
 lemma DungFundLemma1Lab: "admissibleLab AF Lab \<Longrightarrow> \<forall>a. defends AF (Lab2Ext Lab) a \<longrightarrow> 
      admissibleLab AF (\<lambda>x. if (x = a) then In else (if (AF x a) then Out else Lab(x) ))"
@@ -140,7 +141,7 @@ lemma prop5_3to1: \<open>maximal (completeLab AF) Lab undec \<longrightarrow> mi
 lemma prop5_3to2: \<open>maximal (completeLab AF) Lab undec \<longrightarrow> minimal (completeLab AF) Lab out\<close>
   using prop5_3to1 prop5_1iff2 by blast
 
-(*Prop 8 from [BCG2011] 
+(*Prop 8 from [BCG2011]
  For complete labellings, being maximal/greatest wrt In is equivalent to being maximal/greatest wrt Out*)
 lemma prop8: \<open>maximal (completeLab AF) Lab in \<longleftrightarrow> maximal (completeLab AF) Lab out\<close> unfolding maximal_def
   by (smt (z3) complete_defEq completeLab2_def legallyIn_def legallyOut_def)
@@ -181,7 +182,7 @@ lemma preferredMaxCompleteLabEq: "preferredLab AF Lab \<longleftrightarrow> comp
 (* preferred labellings always exist *)
 lemma preferredExist: \<open>\<exists>Lab. preferredLab AF Lab\<close> by (meson maxAdmissibleComplete preferredExist preferredExt_def preferred_EL)
 
-(* Prop. 10 from [BCG2011] 
+(* Prop. 10 from [BCG2011]
  If no argument is labelled Undec then the notions of conflict-free, admissible, complete and preferred collapse *)
 lemma prop10_1to2: \<open>\<forall>x. Lab(x) \<noteq> Undec \<Longrightarrow> conflictfreeLab AF Lab \<longrightarrow> admissibleLab AF Lab\<close>
   unfolding Defs by (meson Label.exhaust)
@@ -229,7 +230,7 @@ lemma stableLem01: \<open>\<forall>Lab. \<not>stableLab (\<lambda>x y. x = y) La
 corollary \<open>\<exists>AF. \<forall>Lab. \<not>stableLab AF Lab\<close> using stableLem01 by auto
 
 (*Lemma 14 from Dung. S is a stable extension iff S = {A | A is not attacked by S}.
-Adapted to Labelings: It's weaker as we have to deal with Undec as well. *)
+Adapted to Labellings: It's weaker as we have to deal with Undec as well. *)
 lemma lem14Dung: "stableLab AF Lab \<longrightarrow> (\<forall>a. in(Lab) a \<longleftrightarrow> \<not>(\<exists>b. in(Lab) b \<and> AF b a))" unfolding stableLab_def complete_defEq
   by (metis (full_types) Label.distinct(1) Label.exhaust completeLab2_def inset_def legallyOut_def outset_def)
 

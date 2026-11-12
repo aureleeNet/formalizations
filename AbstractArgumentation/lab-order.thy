@@ -4,11 +4,13 @@ begin
 
 section \<open>The Commitment Order on Labellings\<close>
 
-text \<open>We represent labellings by In and Out decisions and establish order and fixed-point results for existence proofs.\<close>
+text \<open>We represent labellings by In and Out decisions and establish order and fixed-point results
+for existence proofs.\<close>
 
-text \<open>A decision is an argument together with its In/Out label (True/False).
-   Undec is represented by absence of both decisions.  This is an order
-   representation of labellings for the generic powerset lemmas in misc.\<close>
+text \<open>A decision pairs an argument with an In or Out label, represented by True or False,
+respectively. Undec is represented by the absence of both decisions. This representation
+allows us to apply the generic powerset lemmas in misc.thy to the commitment order on
+labellings.\<close>
 definition lab_decisions :: "'a Set \<Rightarrow> 'a Labelling \<Rightarrow> ('a \<times> bool) Set"
   where "lab_decisions A L p \<equiv> A (fst p) \<and>
     (if snd p then in L (fst p) else out L (fst p))"

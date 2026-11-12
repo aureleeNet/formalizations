@@ -1,8 +1,8 @@
 (* D. Fuenmayor and A. Steen, August 2021 *)
-(* This file contains the verification of meta-theoretical connections of extension-based semanticss. 
-   Auxiliary references: 
+(* This file contains the verification of meta-theoretical connections of extension-based semantics.
+   Auxiliary references:
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
-            Knowledge Engineering Review (2011) 
+            Knowledge Engineering Review (2011)
 *)
 theory "ext-simpl-relationships"
   imports "extensions-simpl" "ext-simpl-properties"
@@ -10,7 +10,8 @@ begin
 
 section \<open>Inclusions between Extension Semantics over the Full Universe\<close>
 
-text \<open>We establish inclusion relationships between extension semantics over the full argument universe.\<close>
+text \<open>We establish inclusion relationships between extension semantics over the full argument
+universe.\<close>
 
 (************************************************************************)
 (* Inclusion relations as summary: Figure 12 of [BCG2011]

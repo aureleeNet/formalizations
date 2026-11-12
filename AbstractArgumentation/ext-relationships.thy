@@ -1,8 +1,8 @@
 (* D. Fuenmayor and A. Steen, August 2021 *)
-(* This file contains the verification of meta-theoretical connections of extension-based semantics. 
-   Auxiliary references: 
+(* This file contains the verification of meta-theoretical connections of extension-based semantics.
+   Auxiliary references:
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
-            Knowledge Engineering Review (2011) 
+            Knowledge Engineering Review (2011)
 *)
 theory "ext-relationships"
   imports "extensions" "ext-properties"

@@ -4,7 +4,8 @@ begin
 
 section \<open>Generating Extensions and Labellings with Nitpick\<close>
 
-text \<open>We use Nitpick to explore extensions and labellings of example argumentation frameworks under different semantics.\<close>
+text \<open>We use Nitpick to explore extensions and labellings of example argumentation frameworks under
+different semantics.\<close>
 (* These are exploratory witness queries, including unsatisfiable requests. *)
 nitpick_params [box=false, expect=""]
 
@@ -61,7 +62,7 @@ lemma \<open>findFor' att admissibleLab Labs\<close> nitpick[satisfy, eval = "ca
 lemma \<open>findFor' att completeExt Exts\<close> nitpick[satisfy, eval = "card Exts"] oops
 (* This gives us exactly the 3 sets predicted in [BG2011] p. 10: {A}, {A, C}, {A, D} *)
 lemma \<open>findFor' att completeLab Labs\<close> nitpick[satisfy, eval = "card Labs"] oops
-(* This gives us exactly the 3 labellings predicted in [BG2011] p. 10: 
+(* This gives us exactly the 3 labellings predicted in [BG2011] p. 10:
   {(   (A := In, B := Out, C := In,    D := Out),
        (A := In, B := Out, C := Out,   D := In),
        (A := In, B := Out, C := Undec, D := Undec)} *)
@@ -70,7 +71,7 @@ lemma \<open>findFor' att completeLab Labs\<close> nitpick[satisfy, eval = "card
 lemma \<open>findFor' att groundedExt Exts\<close> nitpick[satisfy, eval = "card Exts"] oops
 (* This gives exactly the one extension given in [BG2011] p. 10:  {A} *)   
 lemma \<open>findFor' att groundedLab Labs\<close> nitpick[satisfy,box=false, eval = "card Labs"] oops
-(* This gives exactly the one labelling given in [BG2011] p. 10: 
+(* This gives exactly the one labelling given in [BG2011] p. 10:
       {(A := In, B := Out, C := Undec, D := Undec)} *)   
 (* comment: we have to disable boxing for nitpick to find the model.*)
 
@@ -151,7 +152,7 @@ lemma \<open>findFor' att groundedLab Labs\<close> nitpick[satisfy, box=false, e
 lemma \<open>findFor' att preferredExt Exts\<close> nitpick[satisfy, eval = "card Exts"] oops
 (* This gives us exactly the 2 sets predicted in [BG2011] p. 12: {A, D}, {B, D} *)
 lemma \<open>findFor' att preferredLab Labs\<close> nitpick[satisfy, box=false, eval = "card Labs"] oops
-(* checked: these are exactly the two labellings given in [BG2011] p. 12 
+(* checked: these are exactly the two labellings given in [BG2011] p. 12
   Labs = {(A := In, B := Out, C := Out, D := In), (A := Out, B := In, C := Out, D := In)}*)
 (* comment: we have to disable boxing for nitpick to find the model *)
 

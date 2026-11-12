@@ -1,9 +1,9 @@
 (* D. Fuenmayor and A. Steen, August 2021 *)
 (* This file contains experiments with and verification of properties of labelling-based semantics
    for argumentation frameworks. *)
-(* Auxiliary references: 
+(* Auxiliary references:
  [BCG 2011] Baroni, P., M. Caminada and M. Giacomin, An introduction to argumentation semantics,
-            Knowledge Engineering Review (2011) 
+            Knowledge Engineering Review (2011)
  [Dung 1995] Dung, P.M., On the acceptability of arguments and its fundamental role in nonmonotonic reasoning,
             logic programming and n-person games, Artificial Intelligence. (1995)
 *)
@@ -13,29 +13,32 @@ begin
 
 section \<open>Properties of Labelling Semantics\<close>
 
-text \<open>We prove existence, uniqueness, and structural results for labelling semantics, independently of extension semantics.\<close>
+text \<open>We prove existence, uniqueness, and structural results for labelling semantics, independently
+of extension semantics.\<close>
 
 subsection \<open>Admissible and conflict-free labellings\<close>
 
-text \<open>There always exists an admissible Labelling (label, e.g., all arguments as Undec).\<close>
+text \<open>An admissible labelling always exists; for example, label every argument Undec.\<close>
 lemma exAdmissible: \<open>\<exists>Lab. admissibleLab\<^sup>\<A> att Lab\<close> unfolding Defs by auto
 (* See here: *)
 lemma fixes att :: \<open>'a Rel\<close> and Lab :: \<open>'a Labelling\<close>
       assumes \<open>\<forall>x. \<A> x \<longrightarrow> undec Lab x\<close> (* give every argument the label Undec *)
       shows \<open>admissibleLab\<^sup>\<A> att Lab\<close> using assms unfolding Defs by simp
 
-text \<open>every admissible labelling is conflict-free but not the other way round.\<close>
+text \<open>Every admissible labelling is conflict-free, but the converse does not hold.\<close>
 lemma admissibleLabConflictfree: \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> conflictfreeLab\<^sup>\<A> att Lab\<close> 
   by (simp add: admissibleLab_def conflictfreeLab_def inset_def legallyIn_def legallyOut_def outset_def)
 lemma \<open>conflictfreeLab\<^sup>\<A> att Lab \<Longrightarrow> admissibleLab\<^sup>\<A> att Lab\<close> nitpick oops
 
-text \<open>For admissible labellings, legally-undecided implies undecided but not the other way round.\<close>
+text \<open>For admissible labellings, legally undecided arguments are labelled undecided, but the
+converse does not hold.\<close>
 lemma admissibleLabLegUndec: \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyUndec\<^sup>\<A> att Lab x \<longrightarrow> undec Lab x\<close>
   unfolding admissibleLab_def by (meson Label.exhaust inset_def legallyUndec_def outset_def undecset_def)
 
 lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> undec Lab x \<longrightarrow> legallyUndec\<^sup>\<A> att Lab x\<close> nitpick oops
 
-text \<open>OTOH, for admissible labellings, legally-in/out still do not imply in/out.\<close>
+text \<open>For admissible labellings, legally in or legally out arguments need not be labelled in or out,
+respectively.\<close>
 lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyIn\<^sup>\<A> att Lab x \<longrightarrow> in Lab x\<close> nitpick oops
 lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyOut\<^sup>\<A> att Lab x \<longrightarrow> out Lab x\<close> nitpick oops
 
@@ -47,13 +50,14 @@ lemma DungFundLemma1Lab: \<open>admissibleLab\<^sup>\<A> att Lab \<and> defends\
   
 subsection \<open>Complete labellings\<close>
 
-text \<open>For complete labellings, legally-in/out does indeed imply in/out-labelled.\<close>
+text \<open>For complete labellings, legally in or legally out arguments are labelled in or out,
+respectively.\<close>
 lemma completeLabLegIn:  \<open>completeLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyIn\<^sup>\<A> att Lab x \<longrightarrow> in Lab x\<close>
   unfolding Defs using Label.exhaust by metis
 lemma completeLabLegOut: \<open>completeLab\<^sup>\<A> att Lab \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> legallyOut\<^sup>\<A> att Lab x \<longrightarrow> out Lab x\<close>
   unfolding Defs using Label.exhaust by metis
 
-text \<open>in-sets of complete labellings are fixed points of the characteristic function.\<close>
+text \<open>The in-sets of complete labellings are fixed points of the characteristic function.\<close>
 lemma completeLabInFP: "completeLab\<^sup>\<A> att Lab \<Longrightarrow> fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) (in Lab)"
   unfolding fixpoint_rel_def using completeLab2_def complete_defEq
   by (smt (verit, ccfv_threshold) defends_rel_def legallyIn_def legallyOut_def)
@@ -63,7 +67,7 @@ unfolding fixpoint_rel_def using completeLab2_def complete_defEq
   by (smt (verit, ccfv_threshold) defends_rel_def legallyIn_def legallyOut_def)
 
 
-text \<open>complete labellings always exist.\<close>
+text \<open>Complete labellings always exist.\<close>
 lemma complete_exists: \<open>\<exists>Lab. completeLab\<^sup>\<A> att Lab\<close>
 proof -
   obtain S where max: "maximal (admissible_decisions \<A> att) S id"
@@ -77,11 +81,11 @@ lemma complete_fixed_point_exists:
   "\<exists>L. fixpoint\<^sup>\<A> (\<F>\<^sup>\<A> att) (in L)"
   by (meson complete_exists completeLabInFP)
 
-text \<open>every complete labelling is admissible but not the other way round.\<close>
+text \<open>Every complete labelling is admissible, but the converse does not hold.\<close>
 lemma completeLabAdmissible: \<open>completeLab\<^sup>\<A> att Lab \<Longrightarrow> admissibleLab\<^sup>\<A> att Lab\<close> by (simp add: completeLab_def)
 lemma \<open>admissibleLab\<^sup>\<A> att Lab \<Longrightarrow> completeLab\<^sup>\<A> att Lab\<close> nitpick oops
 
-text \<open>For complete labellings we have that in/out-sets completely determine the labelling.\<close>
+text \<open>A complete labelling is determined by its in-set or its out-set.\<close>
 lemma completeLabInLab: \<open>completeLab\<^sup>\<A> att L1 \<Longrightarrow> completeLab\<^sup>\<A> att L2 \<Longrightarrow> in(L1) \<approx>\<^sup>\<A> in(L2) \<longrightarrow> (\<forall>x. \<A> x \<longrightarrow> L1(x) = L2(x))\<close>
   unfolding completeLab2_def complete_defEq by (smt (verit, best) Label.exhaust inset_def legallyOut_def outset_def)
 
@@ -125,7 +129,7 @@ proof -
   thus ?thesis by blast
 qed
 
-text \<open>Lemma 1 from [BCG2011].\<close>
+text \<open>Lemma 1 from [BCG 2011].\<close>
 lemma complete_in_out_mono:
   "completeLab\<^sup>\<A> att L \<Longrightarrow> completeLab\<^sup>\<A> att M \<Longrightarrow>
    (in L) \<subseteq>\<^sup>\<A> (in M) \<longleftrightarrow> (out L) \<subseteq>\<^sup>\<A> (out M)"
@@ -166,8 +170,8 @@ proof -
   thus ?thesis by blast
 qed
 
-text \<open>For complete labellings, every in-set which is minimal is the least in-set.
-(this result is key and has somehow to do with the fact that complete extensions are fixed points of a monotonic function).\<close>
+text \<open>Among complete labellings, every minimal in-set is a least in-set. The proof uses the monotone
+update function on labelling decisions.\<close>
 lemma completeLabMinLeastIn: \<open>minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longrightarrow> least\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in\<close>
   using minLeastCollapse_rel[where U="\<A>" and Prop="completeLab\<^sup>\<A> att" and E="in", OF complete_least_in_exists] by blast
 
@@ -216,7 +220,7 @@ lemma grounded_defEq: \<open>groundedLab\<^sup>\<A> att Lab \<longleftrightarrow
   using completeLabMinLeastIn leastMin_rel[where U="\<A>"
     and Prop="completeLab\<^sup>\<A> att" and E="in"] by blast
 
-text \<open>grounded labellings always exist.\<close>
+text \<open>Grounded labellings always exist.\<close>
 lemma grounded_exists: "\<exists>Lab. groundedLab\<^sup>\<A> att Lab"
 proof -
   obtain L where least_in: "least\<^sup>\<A> (completeLab\<^sup>\<A> att) L in"
@@ -226,12 +230,12 @@ proof -
   thus ?thesis unfolding groundedLab_def by blast
 qed
 
-text \<open>Side comment from [BCG2011] that grounded labellings are unique.\<close>
+text \<open>Grounded labellings are unique [BCG 2011].\<close>
 lemma grounded_unique: \<open>groundedLab\<^sup>\<A> att Lab1 \<Longrightarrow> groundedLab\<^sup>\<A> att Lab2 \<Longrightarrow> \<forall>x. \<A> x \<longrightarrow> Lab1(x) = Lab2(x)\<close>
   unfolding grounded_defEq least_rel_def
   by (smt (verit, del_insts) completeLabInLab groundedLab2_def least_rel_def) 
 
-text \<open>preferred labellings always exist.\<close>
+text \<open>Preferred labellings always exist.\<close>
 lemma preferred_exists: \<open>\<exists>Lab. preferredLab\<^sup>\<A> att Lab\<close>
 proof -
   obtain S where max: "maximal (admissible_decisions \<A> att) S id"
@@ -264,7 +268,7 @@ proof -
   thus ?thesis by blast
 qed
 
-(*Prop 8 from [BCG2011] 
+(*Prop 8 from [BCG2011]
  For complete labellings, being maximal/greatest wrt In is equivalent to being maximal/greatest wrt Out*)
 lemma prop8: \<open>maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longleftrightarrow> maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab out\<close> unfolding maximal_rel_def
   by (smt (z3) complete_defEq completeLab2_def legallyIn_def legallyOut_def)
@@ -272,20 +276,21 @@ lemma prop8: \<open>maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<lon
 lemma prop8': \<open>greatest\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longleftrightarrow> greatest\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab out\<close> unfolding greatest_rel_def
   by (smt (z3) complete_defEq completeLab2_def legallyIn_def legallyOut_def)
 
-text \<open>In fact, being greatest wrt In implies being least wrt Undec, but not the other way round.\<close>
+text \<open>A greatest in-set implies a least undec-set, but the converse does not hold.\<close>
 lemma \<open>greatest\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longrightarrow> least\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec\<close> unfolding greatest_rel_def least_rel_def
   by (smt (z3) admissibleLabLegUndec completeLab_def completeLab2_def complete_defEq legallyOut_def legallyUndec_def)
 
 lemma \<open>least\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec \<longrightarrow> greatest\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in\<close> nitpick oops (* counterexample *)
 
-text \<open>Moreover, being minimal wrt Undec implies being maximal wrt In, but not the other way round (cf. semi-stable labellings).\<close>
+text \<open>A minimal undec-set implies a maximal in-set, but the converse does not hold (see semi-stable
+labellings).\<close>
 lemma \<open>minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec \<longrightarrow> maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in\<close> unfolding minimal_rel_def maximal_rel_def
   by (smt (verit, ccfv_SIG) Label.exhaust complete_defEq completeLab2_def inset_def legallyOut_def outset_def undecset_def)
 
 lemma \<open>maximal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab in \<longrightarrow> minimal\<^sup>\<A> (completeLab\<^sup>\<A> att) Lab undec\<close> nitpick oops (* counterexample *)
 
-text \<open>Prop. 10 from [BCG2011] 
- If no argument is labelled Undec then the notions of conflict-free, admissible, complete and preferred collapse.\<close>
+text \<open>Proposition 10 from [BCG 2011]: If no argument is labelled Undec, conflict-free, admissible,
+complete, and preferred labellings coincide.\<close>
 lemma prop10_1to2: \<open>\<forall>x. Lab(x) \<noteq> Undec \<Longrightarrow> conflictfreeLab\<^sup>\<A> att Lab \<longrightarrow> admissibleLab\<^sup>\<A> att Lab\<close>
   by (smt (verit, ccfv_threshold) Label.exhaust inset_def admissibleLab_def conflictfreeLab_def legallyIn_def legallyOut_def outset_def)
 lemma prop10_2to3: \<open>\<forall>x. Lab(x) \<noteq> Undec \<Longrightarrow> admissibleLab\<^sup>\<A> att Lab \<longrightarrow> completeLab\<^sup>\<A> att Lab\<close> 
@@ -382,7 +387,7 @@ proof -
 qed
 
 
-text \<open>ideal labelling are unique.\<close>
+text \<open>Ideal labellings are unique.\<close>
 lemma ideal_unique: \<open>idealLab\<^sup>\<A> att Lab1 \<Longrightarrow> idealLab\<^sup>\<A> att Lab2 \<Longrightarrow> \<forall>a. \<A> a \<longrightarrow> Lab1 a = Lab2 a\<close>
 proof -
   assume i1: "idealLab\<^sup>\<A> att Lab1" and i2: "idealLab\<^sup>\<A> att Lab2"
@@ -392,22 +397,24 @@ proof -
     by (smt (verit) Label.exhaust inset_def outset_def)
 qed
 
-subsection \<open>Stable, semi-stable and stage labellings\<close>
+subsection \<open>Stable, semi-stable, and stage labellings\<close>
 
-text \<open>the (nonempty) AF in which every arguments attacks itself does not have a stable labelling.\<close>
+text \<open>A nonempty argumentation framework in which every argument attacks itself has no stable
+labelling.\<close>
 lemma stableLem01: \<open>\<exists>x. \<A> x \<longrightarrow> (\<forall>Lab. \<not>stableLab\<^sup>\<A> (\<lambda>x y. x = y) Lab)\<close>
   unfolding stableLab_def completeLab_def by (metis (full_types) Label.exhaust admissibleLabConflictfree completeLab2_def completeLab_def complete_defEq conflictfreeLab_def inset_def legallyIn_def outset_def)
 
-text \<open>stable labellings do not exist necessarily.\<close>
+text \<open>Stable labellings need not exist.\<close>
 corollary \<open>\<exists>x. \<A> x \<longrightarrow> (\<exists>att. \<forall>Lab. \<not>stableLab\<^sup>\<A> att Lab)\<close> using stableLem01 by auto
 
-text \<open>Lemma 14 from Dung. S is a stable extension iff S = {A | A is not attacked by S}.
-Adapted to Labelings: It's weaker as we have to deal with Undec as well.\<close>
+text \<open>Lemma 14 from [Dung 1995] states that S is a stable extension if and only if S = {A | A is not
+attacked by S}. The adaptation to labellings is weaker because it also accounts for the Undec
+label.\<close>
 lemma lem14Dung: "stableLab\<^sup>\<A> att Lab \<longrightarrow> (\<forall>a. \<A> a \<longrightarrow> (in(Lab) a \<longleftrightarrow> \<not>(\<exists>b. \<A> b \<and> in(Lab) b \<and> att b a)))" unfolding stableLab_def complete_defEq
   by (metis (full_types) Label.distinct(1) Label.exhaust completeLab2_def inset_def legallyOut_def outset_def)
 
-text \<open>Lemma 15 from Dung. Every stable extension is a preferred extension, but not vice versa.
-Adapted to Labellings.\<close>
+text \<open>The labelling analogue of Lemma 15 from [Dung 1995]: Every stable labelling is preferred, but
+the converse does not hold.\<close>
 lemma lem15Dung: \<open>stableLab\<^sup>\<A> att Lab \<Longrightarrow> preferredLab\<^sup>\<A> att Lab\<close>
 proof -
   assume stable: "stableLab\<^sup>\<A> att Lab"
@@ -425,7 +432,7 @@ qed
 
 lemma \<open>preferredLab\<^sup>\<A> att Lab \<Longrightarrow> stableLab\<^sup>\<A> att Lab\<close> nitpick oops (* counterexample *)
 
-text \<open>infinite frameworks need not have semi-stable labellings.\<close>
+text \<open>Infinite frameworks need not have semi-stable labellings.\<close>
 lemma semistable_exists:
   assumes fin: "finite {x. \<A> x}"
   shows "\<exists>Lab. semistableLab\<^sup>\<A> att Lab"
